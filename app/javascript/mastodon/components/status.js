@@ -1,4 +1,5 @@
 import React from 'react';
+import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import Avatar from './avatar';
@@ -17,6 +18,10 @@ import { HotKeys } from 'react-hotkeys';
 import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
 import { displayMedia } from '../initial_state';
+
+import StatusContainer from '../containers/status_container';
+import { makeGetStatus } from '../selectors';
+import { createSelector } from 'reselect';
 
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
@@ -51,7 +56,40 @@ export const defaultMediaVisibility = (status) => {
   return (displayMedia !== 'hide_all' && !status.get('sensitive') || displayMedia === 'show_all');
 };
 
+const makeMapStateToProps = () => {
+  const getStatus = makeGetStatus();
+
+  const getSons = createSelector([
+    (_, { id }) => id,
+    state => state.getIn(['contexts', 'replies']),
+    state => state.get('statuses'),
+  ], (statusId, contextReplies, statuses) => {
+	
+	return Immutable.List(contextReplies.get(statusId));
+  });
+
+  const mapStateToProps = (state, props) => {
+    const status = getStatus(state, { id: props.params.statusId });
+    let noFather = false;
+    let sonsIds = Immutable.List();
+
+    if (status) {
+      noFather = (status.get('in_reply_to_id') == null);
+      sonsIds = getSons(state, { id: status.get('id') });
+    }
+
+    return {
+      status,
+      noFather,
+      sonsIds,
+    };
+  };
+
+  return mapStateToProps;
+};
+
 export default @injectIntl
+@connect(makeMapStateToProps)
 class Status extends ImmutablePureComponent {
 
   static contextTypes = {
@@ -86,6 +124,9 @@ class Status extends ImmutablePureComponent {
     updateScrollBottom: PropTypes.func,
     cacheMediaWidth: PropTypes.func,
     cachedMediaWidth: PropTypes.number,
+	
+	noFather: ImmutablePropTypes.bool,
+	sonsIds: ImmutablePropTypes.list,
   };
 
   // Avoid checking props that are functions (and whose equality will always
@@ -270,11 +311,24 @@ class Status extends ImmutablePureComponent {
     this.node = c;
   }
 
+  renderChildren (list) {
+    return list.map(id => (
+      <StatusContainer
+        key={id}
+        id={id}
+        onMoveUp={this.handleMoveUp}
+        onMoveDown={this.handleMoveDown}
+        contextType='thread'
+      />
+    ));
+  }
+  
   render () {
     let media = null;
     let statusAvatar, prepend, rebloggedByText;
+	let sons;
 
-    const { intl, hidden, featured, otherAccounts, unread, showThread } = this.props;
+    const { intl, hidden, featured, otherAccounts, unread, showThread, noFather, sonsIds } = this.props;
 
     let { status, account, ...other } = this.props;
 
@@ -429,6 +483,10 @@ class Status extends ImmutablePureComponent {
       statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
     }
 
+	if(noFather && sonsIds && sonsIds.size > 0) {
+		sons = <div>{this.renderChildren(sonsIds)}</div>;
+	}
+
     return (
       <HotKeys handlers={handlers}>
         <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), read: unread === false, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
@@ -461,6 +519,7 @@ class Status extends ImmutablePureComponent {
             <StatusActionBar status={status} account={account} {...other} />
           </div>
         </div>
+		{sons}
       </HotKeys>
     );
   }
