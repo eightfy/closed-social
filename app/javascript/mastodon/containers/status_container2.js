@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import Status from '../components/status';
+import Status from '../components/status2';
 import { makeGetStatus } from '../selectors';
 import {
   replyCompose,
@@ -43,7 +43,7 @@ const makeMapStateToProps = () => {
 
   const mapStateToProps = (state, props) => ({
     status: getStatus(state, props),
-    sonsIds: 'com_prev' in props ? state.getIn(['contexts', 'replies', props.id]) : null,
+    sonsIds: state.getIn(['contexts', 'replies', props.id]),
   });
 
   return mapStateToProps;

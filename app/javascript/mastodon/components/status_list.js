@@ -100,6 +100,7 @@ export default class StatusList extends ImmutablePureComponent {
           onMoveDown={this.handleMoveDown}
           contextType={timelineId}
           showThread
+          com_prev
         />
       ))
     ) : null;

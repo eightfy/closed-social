@@ -19,7 +19,6 @@ import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
 import { displayMedia } from '../initial_state';
 
-import StatusContainer from '../containers/status_container2';
 //import DetailedStatus from '../features/status/components/detailed_status';
 
 // We use the component (and not the container) since we do not want
@@ -276,38 +275,9 @@ class Status extends ImmutablePureComponent {
     this.node = c;
   }
 
-  renderChildren (list) {
-    /*
-    return list.map(id => (
-      <DetailedStatus
-        key = {id}
-        status={status}
-        onOpenVideo={this.nothing}
-        onOpenMedia={this.nothing}
-        onToggleHidden={this.nothing}
-        domain={"domain"}
-        showMedia={this.nothing}
-        onToggleMediaVisibility={this.nothing}
-      />
-
-    ));
-    */
-    return list.map(id => (
-      <StatusContainer
-        key={id}
-        id={id}
-        onMoveUp={()=>{}}
-        onMoveDown={()=>{}}
-        contextType='thread'
-      />
-    ));
-    
-  }
-
   render () {
     let media = null;
     let statusAvatar, prepend, rebloggedByText;
-    let sons;
 
     const { intl, hidden, featured, otherAccounts, unread, showThread, sonsIds } = this.props;
 
@@ -464,10 +434,6 @@ class Status extends ImmutablePureComponent {
       statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
     }
 
-  if(status.get('in_reply_to_id') == null && sonsIds && sonsIds.size > 0) {
-    sons = <div className='comments_timeline'>{this.renderChildren(sonsIds)}</div>;
-  }
-
     return (
       <HotKeys handlers={handlers}>
         <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), read: unread === false, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
@@ -500,7 +466,6 @@ class Status extends ImmutablePureComponent {
             <StatusActionBar status={status} account={account} {...other} />
           </div>
         </div>
-      {sons}
       </HotKeys>
     );
   }
