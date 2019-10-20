@@ -62,6 +62,7 @@ zh-CN:
       moderator: 监察员
     unavailable: 个人资料不可用
     unfollow: 取消关注
+    unsigned: 【登陆后可见】
   admin:
     account_actions:
       action: 执行操作

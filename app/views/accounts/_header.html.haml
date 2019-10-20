@@ -13,7 +13,7 @@
     .public-account-header__tabs
       .public-account-header__tabs__name
         %h1
-          = user_signed_in? ? display_name(account, custom_emojify: true) : t('accounts.unavailable')
+          = user_signed_in? ? display_name(account, custom_emojify: true) : t('accounts.unsigned')
           %small
             = acct(account)
             = fa_icon('lock') if account.locked?
@@ -37,13 +37,14 @@
         .public-account-header__tabs__tabs__buttons
           = account_action_button(account)
 
-    .public-account-header__extra
-      = render 'accounts/bio', account: account
+    -if user_signed_in?
+      .public-account-header__extra
+        = render 'accounts/bio', account: account
 
-      .public-account-header__extra__links
-        = link_to account_following_index_url(account) do
-          %strong= number_to_human account.following_count, strip_insignificant_zeros: true
-          = t('accounts.following', count: account.following_count)
-        = link_to account_followers_url(account) do
-          %strong= number_to_human account.followers_count, strip_insignificant_zeros: true
-          = t('accounts.followers', count: account.followers_count)
+        .public-account-header__extra__links
+          = link_to account_following_index_url(account) do
+            %strong= number_to_human account.following_count, strip_insignificant_zeros: true
+            = t('accounts.following', count: account.following_count)
+          = link_to account_followers_url(account) do
+            %strong= number_to_human account.followers_count, strip_insignificant_zeros: true
+            = t('accounts.followers', count: account.followers_count)

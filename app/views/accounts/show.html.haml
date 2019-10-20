@@ -1,5 +1,5 @@
 - content_for :page_title do
-  = user_signed_in? ? "#{display_name(@account)} (@#{@account.local_username_and_domain})" : t('accounts.unavailable')
+  = user_signed_in? ? "#{display_name(@account)} (@#{@account.local_username_and_domain})" : t('accounts.unsigned')
 
 - content_for :header_tags do
   %meta{ name: 'description', content: account_description(@account) }/
