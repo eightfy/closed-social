@@ -474,9 +474,9 @@ zh-HK:
         other: "自從上次登入以來，你收到 %{count} 則新的通知 \U0001F418"
       title: 在你不在的這段時間……
     favourite:
-      body: 您的文章被 %{name} 收藏：
-      subject: "%{name} 收藏了你的文章"
-      title: 新的收藏
+      body: 您的文章被 %{name} 赞藏：
+      subject: "%{name} 赞藏了你的文章"
+      title: 新的赞藏
     follow:
       body: "%{name} 開始關注你！"
       subject: "%{name} 現正關注你"
@@ -598,7 +598,7 @@ zh-HK:
     manual_instructions: 如果你無法掃描 QR 圖形碼，請手動輸入這個文字密碼︰
     recovery_codes: 備份恢復驗證碼
     recovery_codes_regenerated: 成功產生新的備用驗證碼
-    recovery_instructions_html: 如果你遺失了安裝認證器的裝置（如︰你的電話），你可以使用備用驗證碼進行登入。請確保將備用驗證碼收藏穩當，（如列印出來，和你其他重要文件一起存放）。
+    recovery_instructions_html: 如果你遺失了安裝認證器的裝置（如︰你的電話），你可以使用備用驗證碼進行登入。請確保將備用驗證碼赞藏穩當，（如列印出來，和你其他重要文件一起存放）。
     setup: 設定
     wrong_code: 你輸入的認證碼並不正確！可能伺服器時間和你手機不一致，請檢查你手機的時鐘，或與本站管理員聯絡。
   user_mailer:
