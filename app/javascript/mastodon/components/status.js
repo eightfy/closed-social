@@ -308,7 +308,7 @@ class Status extends ImmutablePureComponent {
     let statusAvatar, prepend, rebloggedByText;
     let sons;
 
-    const { intl, hidden, featured, otherAccounts, unread, showThread, deep, sonsIds } = this.props;
+    const { intl, hidden, featured, otherAccounts, unread, showThread, deep, tree_type, sonsIds } = this.props;
 
     let { status, account, ...other } = this.props;
 
@@ -482,7 +482,7 @@ class Status extends ImmutablePureComponent {
 
     return (
       <HotKeys handlers={handlers}>
-        <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), read: unread === false, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
+        <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), read: unread === false, focusable: !this.props.muted }, (deep!=null) && 'tree-'+tree_type)} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
           {prepend}
 
           <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted, read: unread === false })} data-id={status.get('id')}>
@@ -510,7 +510,9 @@ class Status extends ImmutablePureComponent {
               </button>
             )}
 
-            <StatusActionBar status={status} account={account} {...other} />
+            {deep == null || tree_type != 'ance' && (
+              <StatusActionBar status={status} account={account} {...other} />
+            )}
           </div>
         </div>
       {sons}

@@ -414,6 +414,7 @@ class Status extends ImmutablePureComponent {
         onMoveDown={this.handleMoveDown}
         contextType='thread'
         deep={deep==null? null : (type == 'ance'? idx : deep+1)}
+        tree_type={deep==null? null : type}
       />
     ));
   }
@@ -492,7 +493,7 @@ class Status extends ImmutablePureComponent {
         />
 
         <ScrollContainer scrollKey='thread' shouldUpdateScroll={shouldUpdateScroll}>
-          <div className={classNames('scrollable', { fullscreen })} ref={this.setRef}>
+          <div className={classNames('scrollable', { fullscreen }, {'tree':deep!=null})} ref={this.setRef}>
             {ancestors}
 
             <HotKeys handlers={handlers}>
