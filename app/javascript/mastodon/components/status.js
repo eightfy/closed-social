@@ -11,7 +11,7 @@ import StatusContent from './status_content';
 import StatusActionBar from './status_action_bar';
 import AttachmentList from './attachment_list';
 import Card from '../features/status/components/card';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage, FormattedNumber } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { MediaGallery, Video, Audio } from '../features/ui/util/async-components';
 import { HotKeys } from 'react-hotkeys';
@@ -20,7 +20,6 @@ import Icon from 'mastodon/components/icon';
 import { displayMedia } from '../initial_state';
 
 import StatusContainer from '../containers/status_container2';
-//import DetailedStatus from '../features/status/components/detailed_status';
 
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
@@ -309,7 +308,7 @@ class Status extends ImmutablePureComponent {
     let statusAvatar, prepend, rebloggedByText;
     let sons;
 
-    const { intl, hidden, featured, otherAccounts, unread, showThread, sonsIds } = this.props;
+    const { intl, hidden, featured, otherAccounts, unread, showThread, deep, sonsIds } = this.props;
 
     let { status, account, ...other } = this.props;
 
@@ -467,6 +466,19 @@ class Status extends ImmutablePureComponent {
   if(status.get('in_reply_to_id') == null && sonsIds && sonsIds.size > 0) {
     sons = <div className='comments_timeline'>{this.renderChildren(sonsIds)}</div>;
   }
+    
+    let deepRec;
+    if(deep != null) {
+      deepRec = (
+        <div className="detailed-status__button deep__number">
+          <Icon id="tree" />
+          <span>
+            【<FormattedNumber value={deep} />】
+          </span>
+        </div>
+      );
+    }
+
 
     return (
       <HotKeys handlers={handlers}>
@@ -487,6 +499,7 @@ class Status extends ImmutablePureComponent {
               </a>
             </div>
 
+            {deepRec}
             <StatusContent status={status} onClick={this.handleClick} expanded={!status.get('hidden')} onExpandedToggle={this.handleExpandedToggle} collapsable />
 
             {media}

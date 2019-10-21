@@ -91,7 +91,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
   render () {
     const status = (this.props.status && this.props.status.get('reblog')) ? this.props.status.get('reblog') : this.props.status;
     const outerStyle = { boxSizing: 'border-box' };
-    const { compact } = this.props;
+    const { compact, deep } = this.props;
 
     if (!status) {
       return null;
@@ -207,6 +207,18 @@ export default class DetailedStatus extends ImmutablePureComponent {
       );
     }
 
+    let deepRec;
+    if(deep != null) {
+      deepRec = (
+        <div className="detailed-status__button deep__number">
+          <Icon id="tree" />
+          <span>
+            【<FormattedNumber value={deep} />】
+          </span>
+        </div>
+      );
+    }
+
     return (
       <div style={outerStyle}>
         <div ref={this.setRef} className={classNames('detailed-status', { compact })}>
@@ -215,6 +227,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
             <DisplayName account={status.get('account')} localDomain={this.props.domain} />
           </a>
 
+          {deepRec}
           <StatusContent status={status} expanded={!status.get('hidden')} onExpandedToggle={this.handleExpandedToggle} />
 
           {media}

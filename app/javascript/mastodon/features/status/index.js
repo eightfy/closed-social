@@ -120,14 +120,25 @@ const makeMapStateToProps = () => {
     const status = getStatus(state, { id: props.params.statusId });
     let ancestorsIds = Immutable.List();
     let descendantsIds = Immutable.List();
+    let rootAcct;
+    let deep;
 
     if (status) {
       ancestorsIds = getAncestorsIds(state, { id: status.get('in_reply_to_id') });
-      descendantsIds = getDescendantsIds(state, { id: status.get('id') });
+      //console.log(ancestorsIds.get(0));
+      const root_status = ancestorsIds.size? getStatus(state, {id: ancestorsIds.get(0)}) : status; //error is directly visit url of non-root detailedStatus, feature!
+      //console.log('statuese', state.get('statuses').size);
+      //console.log('root_status', root_status);
+      //console.log(root_status.get('account'));
+      rootAcct = root_status.getIn(['account', 'acct']);
+      //console.log('rootAcct', rootAcct);
+      descendantsIds = rootAcct == '0' ? state.getIn(['contexts', 'replies', status.get('id')]) : getDescendantsIds(state, { id: status.get('id') });
+      deep = rootAcct == '0' ? ancestorsIds.size : null;
     }
 
     return {
       status,
+      deep,
       ancestorsIds,
       descendantsIds,
       askReplyConfirmation: state.getIn(['compose', 'text']).trim().length !== 0,
@@ -393,14 +404,16 @@ class Status extends ImmutablePureComponent {
     }
   }
 
-  renderChildren (list) {
-    return list.map(id => (
+  renderChildren (list, type) {
+    const { deep } = this.props;
+    return list.map((id,idx) => (
       <StatusContainer
         key={id}
         id={id}
         onMoveUp={this.handleMoveUp}
         onMoveDown={this.handleMoveDown}
         contextType='thread'
+        deep={deep==null? null : (type == 'ance'? idx : deep+1)}
       />
     ));
   }
@@ -436,7 +449,7 @@ class Status extends ImmutablePureComponent {
 
   render () {
     let ancestors, descendants;
-    const { shouldUpdateScroll, status, ancestorsIds, descendantsIds, intl, domain, multiColumn } = this.props;
+    const { shouldUpdateScroll, status, deep, ancestorsIds, descendantsIds, intl, domain, multiColumn } = this.props;
     const { fullscreen } = this.state;
 
     if (status === null) {
@@ -449,11 +462,11 @@ class Status extends ImmutablePureComponent {
     }
 
     if (ancestorsIds && ancestorsIds.size > 0) {
-      ancestors = <div>{this.renderChildren(ancestorsIds)}</div>;
+      ancestors = <div>{this.renderChildren(ancestorsIds, 'ance')}</div>;
     }
 
     if (descendantsIds && descendantsIds.size > 0) {
-      descendants = <div>{this.renderChildren(descendantsIds)}</div>;
+      descendants = <div>{this.renderChildren(descendantsIds, 'desc')}</div>;
     }
 
     const handlers = {
@@ -486,6 +499,7 @@ class Status extends ImmutablePureComponent {
               <div className={classNames('focusable', 'detailed-status__wrapper')} tabIndex='0' aria-label={textForScreenReader(intl, status, false)}>
                 <DetailedStatus
                   status={status}
+                  deep={deep}
                   onOpenVideo={this.handleOpenVideo}
                   onOpenMedia={this.handleOpenMedia}
                   onToggleHidden={this.handleToggleHidden}
