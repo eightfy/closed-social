@@ -510,7 +510,7 @@ class Status extends ImmutablePureComponent {
               </button>
             )}
 
-            {deep == null || tree_type != 'ance' && (
+            {(deep == null || tree_type != 'ance') && (
               <StatusActionBar status={status} account={account} {...other} />
             )}
           </div>
