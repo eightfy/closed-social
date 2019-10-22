@@ -10,6 +10,7 @@ import MissingIndicator from '../../components/missing_indicator';
 import DetailedStatus from './components/detailed_status';
 import ActionBar from './components/action_bar';
 import Column from '../ui/components/column';
+import Tree from 'react-tree-graph';
 import {
   favourite,
   unfavourite,
@@ -46,6 +47,8 @@ import { boostModal, deleteModal } from '../../initial_state';
 import { attachFullscreenListener, detachFullscreenListener, isFullscreen } from '../ui/util/fullscreen';
 import { textForScreenReader, defaultMediaVisibility } from '../../components/status';
 import Icon from 'mastodon/components/icon';
+//import { htmlToText } from 'html-to-text';
+//const htmlToText = require('html-to-text');
 
 const messages = defineMessages({
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
@@ -115,6 +118,26 @@ const makeMapStateToProps = () => {
 
     return Immutable.List(descendantsIds);
   });
+    
+  const getTreeData = createSelector([
+    (_, { id }) => id,
+    state => state.getIn(['contexts', 'replies']),
+    state => state.get('statuses'),
+  ], (statusId, contextReplies, statuses) => {
+
+    const getMore = (id) => {
+      const replies = contextReplies.get(id);
+      const cur_status = statuses.get(id);
+      return {
+        name: cur_status.get('search_index') + (cur_status.get('media_attachments').size > 0 ? " [图片]" : " "), //htmlToText.fromString(statuses.getIn([id, 'content']), {ignoreHref: true}),
+        children: replies ? Array.from(replies.map( i => getMore(i) )) : null
+      }
+    }
+
+    let treeData = getMore(statusId)
+
+    return treeData;
+  });
 
   const mapStateToProps = (state, props) => {
     const status = getStatus(state, { id: props.params.statusId });
@@ -122,18 +145,15 @@ const makeMapStateToProps = () => {
     let descendantsIds = Immutable.List();
     let rootAcct;
     let deep;
+    let tree_data;
 
     if (status) {
       ancestorsIds = getAncestorsIds(state, { id: status.get('in_reply_to_id') });
-      //console.log(ancestorsIds.get(0));
       const root_status = ancestorsIds.size? getStatus(state, {id: ancestorsIds.get(0)}) : status; //error is directly visit url of non-root detailedStatus, feature!
-      //console.log('statuese', state.get('statuses').size);
-      //console.log('root_status', root_status);
-      //console.log(root_status.get('account'));
-      rootAcct = root_status.getIn(['account', 'acct']);
-      //console.log('rootAcct', rootAcct);
+      rootAcct = root_status? root_status.getIn(['account', 'acct']) : -1;
       descendantsIds = rootAcct == '0' ? state.getIn(['contexts', 'replies', status.get('id')]) : getDescendantsIds(state, { id: status.get('id') });
-      deep = rootAcct == '0' ? ancestorsIds.size : null;
+      deep      = rootAcct == '0' ? ancestorsIds.size : null;
+      tree_data = rootAcct == '0' ? getTreeData(state, {id: status.get('id')}) : null;
     }
 
     return {
@@ -141,6 +161,7 @@ const makeMapStateToProps = () => {
       deep,
       ancestorsIds,
       descendantsIds,
+      tree_data,
       askReplyConfirmation: state.getIn(['compose', 'text']).trim().length !== 0,
       domain: state.getIn(['meta', 'domain']),
     };
@@ -173,6 +194,7 @@ class Status extends ImmutablePureComponent {
     fullscreen: false,
     showMedia: defaultMediaVisibility(this.props.status),
     loadedStatusId: undefined,
+    showTree: false
   };
 
   componentWillMount () {
@@ -302,6 +324,10 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(hideStatus(statusIds));
     }
+  }
+
+  handleShowTree = () => {
+    this.setState({ showTree: !this.state.showTree });
   }
 
   handleBlockClick = (status) => {
@@ -450,8 +476,8 @@ class Status extends ImmutablePureComponent {
 
   render () {
     let ancestors, descendants;
-    const { shouldUpdateScroll, status, deep, ancestorsIds, descendantsIds, intl, domain, multiColumn } = this.props;
-    const { fullscreen } = this.state;
+    const { shouldUpdateScroll, status, deep, ancestorsIds, descendantsIds, tree_data, intl, domain, multiColumn } = this.props;
+    const { fullscreen, showTree } = this.state;
 
     if (status === null) {
       return (
@@ -488,7 +514,7 @@ class Status extends ImmutablePureComponent {
           showBackButton
           multiColumn={multiColumn}
           extraButton={(
-            <button className='column-header__button' title={intl.formatMessage(status.get('hidden') ? messages.revealAll : messages.hideAll)} aria-label={intl.formatMessage(status.get('hidden') ? messages.revealAll : messages.hideAll)} onClick={this.handleToggleAll} aria-pressed={status.get('hidden') ? 'false' : 'true'}><Icon id={status.get('hidden') ? 'eye-slash' : 'eye'} /></button>
+            <button className='column-header__button' title={intl.formatMessage(status.get('hidden') ? messages.revealAll : messages.hideAll)} aria-label={intl.formatMessage(status.get('hidden') ? messages.revealAll : messages.hideAll)} onClick={deep ==null ? this.handleToggleAll : this.handleShowTree} aria-pressed={status.get('hidden') ? 'false' : 'true'}><Icon id={status.get('hidden') ? 'eye-slash' : 'eye'} /></button>
           )}
         />
 
@@ -498,6 +524,17 @@ class Status extends ImmutablePureComponent {
 
             <HotKeys handlers={handlers}>
               <div className={classNames('focusable', 'detailed-status__wrapper')} tabIndex='0' aria-label={textForScreenReader(intl, status, false)}>
+
+              {showTree ?
+                <Tree
+                  data={tree_data}
+                  height={300}
+	                width={500}
+                  animated
+                  svgProps={{
+			              className: 'tree-svg'
+                  }}/>
+                :
                 <DetailedStatus
                   status={status}
                   deep={deep}
@@ -508,6 +545,7 @@ class Status extends ImmutablePureComponent {
                   showMedia={this.state.showMedia}
                   onToggleMediaVisibility={this.handleToggleMediaVisibility}
                 />
+              }
 
                 <ActionBar
                   status={status}
