@@ -528,8 +528,8 @@ class Status extends ImmutablePureComponent {
               {showTree ?
                 <Tree
                   data={tree_data}
-                  height={300}
-	                width={500}
+                  height={700}
+	                width={570}
                   animated
                   svgProps={{
 			              className: 'tree-svg'
