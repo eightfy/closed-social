@@ -14,13 +14,14 @@ import SearchResultsContainer from './containers/search_results_container';
 import { changeComposing } from '../../actions/compose';
 import { openModal } from 'mastodon/actions/modal';
 import elephantUIPlane from '../../../images/elephant_ui_plane.svg';
-import { mascot } from '../../initial_state';
+import { mascot, treeRoot } from '../../initial_state';
 import Icon from 'mastodon/components/icon';
 import { logOut } from 'mastodon/utils/log_out';
 
 const messages = defineMessages({
   start: { id: 'getting_started.heading', defaultMessage: 'Getting started' },
   home_timeline: { id: 'tabs_bar.home', defaultMessage: 'Home' },
+  tree: {id: 'tabs_bar.tree', defaultMessage: 'Tree'},
   notifications: { id: 'tabs_bar.notifications', defaultMessage: 'Notifications' },
   public: { id: 'navigation_bar.public_timeline', defaultMessage: 'Federated timeline' },
   community: { id: 'navigation_bar.community_timeline', defaultMessage: 'Local timeline' },
@@ -100,6 +101,9 @@ class Compose extends React.PureComponent {
           <Link to='/getting-started' className='drawer__tab' title={intl.formatMessage(messages.start)} aria-label={intl.formatMessage(messages.start)}><Icon id='bars' fixedWidth /></Link>
           {!columns.some(column => column.get('id') === 'HOME') && (
             <Link to='/timelines/home' className='drawer__tab' title={intl.formatMessage(messages.home_timeline)} aria-label={intl.formatMessage(messages.home_timeline)}><Icon id='home' fixedWidth /></Link>
+          )}
+          {!columns.some(column => column.get('id') === 'TREE') && (
+            <Link to={treeRoot} className='drawer__tab' title={intl.formatMessage(messages.tree)} aria-label={intl.formatMessage(messages.tree)}><Icon id='tree' fixedWidth /></Link>
           )}
           {!columns.some(column => column.get('id') === 'NOTIFICATIONS') && (
             <Link to='/notifications' className='drawer__tab' title={intl.formatMessage(messages.notifications)} aria-label={intl.formatMessage(messages.notifications)}><Icon id='bell' fixedWidth /></Link>

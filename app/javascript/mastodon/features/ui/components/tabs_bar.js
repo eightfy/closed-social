@@ -7,8 +7,11 @@ import { isUserTouching } from '../../../is_mobile';
 import Icon from 'mastodon/components/icon';
 import NotificationsCounterIcon from './notifications_counter_icon';
 
+import { treeRoot } from '../../../initial_state';
+
 export const links = [
   <NavLink className='tabs-bar__link' to='/timelines/home' data-preview-title-id='column.home' data-preview-icon='home' ><Icon id='home' fixedWidth /><FormattedMessage id='tabs_bar.home' defaultMessage='Home' /></NavLink>,
+  <NavLink className='tabs-bar__link' to={treeRoot} data-preview-title-id='column.tree' data-preview-icon='tree' ><Icon id='tree' fixedWidth /><FormattedMessage id='tabs_bar.tree' defaultMessage='Tree' /></NavLink>,
   <NavLink className='tabs-bar__link' to='/notifications' data-preview-title-id='column.notifications' data-preview-icon='bell' ><NotificationsCounterIcon /><FormattedMessage id='tabs_bar.notifications' defaultMessage='Notifications' /></NavLink>,
   <NavLink className='tabs-bar__link' to='/timelines/public/local' data-preview-title-id='column.community' data-preview-icon='users' ><Icon id='users' fixedWidth /><FormattedMessage id='tabs_bar.local_timeline' defaultMessage='Local' /></NavLink>,
   <NavLink className='tabs-bar__link' exact to='/timelines/public' data-preview-title-id='column.public' data-preview-icon='globe' ><Icon id='globe' fixedWidth /><FormattedMessage id='tabs_bar.federated_timeline' defaultMessage='Federated' /></NavLink>,

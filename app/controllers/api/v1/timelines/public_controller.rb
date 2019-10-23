@@ -18,15 +18,7 @@ class Api::V1::Timelines::PublicController < Api::BaseController
   end
 
   def load_statuses
-    (cached_0_pinned_statuses + cached_public_statuses).uniq(&:id)
-  end
-
-  def cached_0_pinned_statuses
-    if not params_slice(:max_id, :since_id, :min_id).empty?
-      return []
-    end
-    z_pinned = Account.find(1).pinned_statuses
-    cache_collection z_pinned, Status
+    cached_public_statuses
   end
 
   def cached_public_statuses
