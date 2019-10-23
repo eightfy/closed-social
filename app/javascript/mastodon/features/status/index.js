@@ -47,8 +47,6 @@ import { boostModal, deleteModal } from '../../initial_state';
 import { attachFullscreenListener, detachFullscreenListener, isFullscreen } from '../ui/util/fullscreen';
 import { textForScreenReader, defaultMediaVisibility } from '../../components/status';
 import Icon from 'mastodon/components/icon';
-//import { htmlToText } from 'html-to-text';
-//const htmlToText = require('html-to-text');
 
 const messages = defineMessages({
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
@@ -130,8 +128,9 @@ const makeMapStateToProps = () => {
       const cur_status = statuses.get(id);
       const text = cur_status.get('search_index');
       return {
+        statusId: id,
         ori_text: text,
-        name: (text.length > 10 ? text.slice(0,7) + "..." : text) + (cur_status.get('media_attachments').size > 0 ? " [图片]" : " "), //htmlToText.fromString(statuses.getIn([id, 'content']), {ignoreHref: true}),
+        name: (text.length > 13 ? text.slice(0,10) + "..." : text) + (cur_status.get('media_attachments').size > 0 ? " [图片]" : " "),
         children: replies ? Array.from(replies.map( i => getMore(i) )) : [],
       }
     }
@@ -482,11 +481,12 @@ class Status extends ImmutablePureComponent {
   }
 
   handleNodeClick = (ev, node) => {
+    console.log(node);
     this.setState({activeNode: node});
   }
 
   getRoot = (json) => {
-		if (json.name === this.state.activeNode) {
+		if (json.statusId == this.state.activeNode) {
 			return json;
 		}
 		for (let i = 0; i < json.children.length; i++) {
@@ -572,6 +572,7 @@ class Status extends ImmutablePureComponent {
                   height={800}
 	                width={svgWidth}
                   animated
+                  keyProp = {"statusId"}
                   textProps={{
                     dx: -4,
                     dy: -6
