@@ -128,9 +128,11 @@ const makeMapStateToProps = () => {
     const getMore = (id) => {
       const replies = contextReplies.get(id);
       const cur_status = statuses.get(id);
+      const text = cur_status.get('search_index');
       return {
-        name: cur_status.get('search_index') + (cur_status.get('media_attachments').size > 0 ? " [图片]" : " "), //htmlToText.fromString(statuses.getIn([id, 'content']), {ignoreHref: true}),
-        children: replies ? Array.from(replies.map( i => getMore(i) )) : null
+        ori_text: text,
+        name: (text.length > 10 ? text.slice(0,7) + "..." : text) + (cur_status.get('media_attachments').size > 0 ? " [图片]" : " "), //htmlToText.fromString(statuses.getIn([id, 'content']), {ignoreHref: true}),
+        children: replies ? Array.from(replies.map( i => getMore(i) )) : [],
       }
     }
 
@@ -145,7 +147,7 @@ const makeMapStateToProps = () => {
     let descendantsIds = Immutable.List();
     let rootAcct;
     let deep;
-    let tree_data;
+    let treeData;
 
     if (status) {
       ancestorsIds = getAncestorsIds(state, { id: status.get('in_reply_to_id') });
@@ -153,7 +155,7 @@ const makeMapStateToProps = () => {
       rootAcct = root_status? root_status.getIn(['account', 'acct']) : -1;
       descendantsIds = rootAcct == '0' ? state.getIn(['contexts', 'replies', status.get('id')]) : getDescendantsIds(state, { id: status.get('id') });
       deep      = rootAcct == '0' ? ancestorsIds.size : null;
-      tree_data = rootAcct == '0' ? getTreeData(state, {id: status.get('id')}) : null;
+      treeData = rootAcct == '0' ? getTreeData(state, {id: status.get('id')}) : null;
     }
 
     return {
@@ -161,7 +163,7 @@ const makeMapStateToProps = () => {
       deep,
       ancestorsIds,
       descendantsIds,
-      tree_data,
+      treeData,
       askReplyConfirmation: state.getIn(['compose', 'text']).trim().length !== 0,
       domain: state.getIn(['meta', 'domain']),
     };
@@ -194,7 +196,9 @@ class Status extends ImmutablePureComponent {
     fullscreen: false,
     showMedia: defaultMediaVisibility(this.props.status),
     loadedStatusId: undefined,
-    showTree: false
+    showTree: false,
+    svgWidth: 400,
+    activeNode: null
   };
 
   componentWillMount () {
@@ -327,7 +331,10 @@ class Status extends ImmutablePureComponent {
   }
 
   handleShowTree = () => {
-    this.setState({ showTree: !this.state.showTree });
+    this.setState({
+      activeNode: null,
+      showTree: !this.state.showTree 
+    });
   }
 
   handleBlockClick = (status) => {
@@ -474,10 +481,29 @@ class Status extends ImmutablePureComponent {
     this.setState({ fullscreen: isFullscreen() });
   }
 
+  handleNodeClick = (ev, node) => {
+    this.setState({activeNode: node});
+  }
+
+  getRoot = (json) => {
+		if (json.name === this.state.activeNode) {
+			return json;
+		}
+		for (let i = 0; i < json.children.length; i++) {
+			let childJson = this.getRoot(json.children[i]);
+			if (childJson) {
+				return childJson;
+			}
+		}
+    //console.log('fail: ', json.name, ' != ', this.state.activeNode);
+		return false;
+	}
+
+
   render () {
     let ancestors, descendants;
-    const { shouldUpdateScroll, status, deep, ancestorsIds, descendantsIds, tree_data, intl, domain, multiColumn } = this.props;
-    const { fullscreen, showTree } = this.state;
+    const { shouldUpdateScroll, status, deep, ancestorsIds, descendantsIds, treeData, intl, domain, multiColumn } = this.props;
+    const { fullscreen, showTree, svgWidth, activeNode } = this.state;
 
     if (status === null) {
       return (
@@ -508,6 +534,21 @@ class Status extends ImmutablePureComponent {
       toggleSensitive: this.handleHotkeyToggleSensitive,
     };
 
+    let root;
+    if(deep != null && showTree) {
+      //console.log("activeNode: ", activeNode);
+      root = activeNode ? this.getRoot(treeData) : treeData;
+      //console.log('first, root =');
+      //console.log(root);
+      root = root ? root : treeData;
+      //console.log("treeData: ");
+      //console.log(treeData);
+      //console.log("root: ");
+      //console.log(root);
+      root.name = root.ori_text;
+      //console.log(root);
+    }
+
     return (
       <Column bindToDocument={!multiColumn} label={intl.formatMessage(messages.detailedStatus)}>
         <ColumnHeader
@@ -523,14 +564,22 @@ class Status extends ImmutablePureComponent {
             {ancestors}
 
             <HotKeys handlers={handlers}>
-              <div className={classNames('focusable', 'detailed-status__wrapper')} tabIndex='0' aria-label={textForScreenReader(intl, status, false)}>
+              <div className={classNames('focusable', 'detailed-status__wrapper')} tabIndex='0' aria-label={textForScreenReader(intl, status, false)} ref={e=>{if(e) this.setState({svgWidth: e.clientWidth})}}>
 
               {showTree ?
                 <Tree
-                  data={tree_data}
-                  height={700}
-	                width={570}
+                  data={root}
+                  height={800}
+	                width={svgWidth}
                   animated
+                  textProps={{
+                    dx: -4,
+                    dy: -6
+                  }}
+                  gProps={{
+					          className: 'node',
+					          onClick: this.handleNodeClick
+				          }}
                   svgProps={{
 			              className: 'tree-svg'
                   }}/>
