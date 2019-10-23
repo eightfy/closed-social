@@ -123,19 +123,18 @@ const makeMapStateToProps = () => {
     state => state.get('statuses'),
   ], (statusId, contextReplies, statuses) => {
 
-    const getMore = (id) => {
+    const getMore = (id, notRoot) => {
       const replies = contextReplies.get(id);
       const cur_status = statuses.get(id);
       const text = cur_status.get('search_index');
       return {
         statusId: id,
-        ori_text: text,
-        name: (text.length > 13 ? text.slice(0,10) + "..." : text) + (cur_status.get('media_attachments').size > 0 ? " [图片]" : " "),
-        children: replies ? Array.from(replies.map( i => getMore(i) )) : [],
+        name: ((notRoot && text.length > 13) ? text.slice(0,10) + "..." : text) + (cur_status.get('media_attachments').size > 0 ? " [图片]" : ""),
+        children: replies ? Array.from(replies.map( i => getMore(i, true) )) : [],
       }
     }
 
-    let treeData = getMore(statusId)
+    let treeData = getMore(statusId, false)
 
     return treeData;
   });
@@ -482,23 +481,14 @@ class Status extends ImmutablePureComponent {
 
   handleNodeClick = (ev, node) => {
     console.log(node);
-    this.setState({activeNode: node});
+
+    if (!this.context.router) {
+      return;
+    }
+
+    const { status } = this.props;
+    this.context.router.history.push(`/statuses/${node}`);
   }
-
-  getRoot = (json) => {
-		if (json.statusId == this.state.activeNode) {
-			return json;
-		}
-		for (let i = 0; i < json.children.length; i++) {
-			let childJson = this.getRoot(json.children[i]);
-			if (childJson) {
-				return childJson;
-			}
-		}
-    //console.log('fail: ', json.name, ' != ', this.state.activeNode);
-		return false;
-	}
-
 
   render () {
     let ancestors, descendants;
@@ -534,21 +524,6 @@ class Status extends ImmutablePureComponent {
       toggleSensitive: this.handleHotkeyToggleSensitive,
     };
 
-    let root;
-    if(deep != null && showTree) {
-      //console.log("activeNode: ", activeNode);
-      root = activeNode ? this.getRoot(treeData) : treeData;
-      //console.log('first, root =');
-      //console.log(root);
-      root = root ? root : treeData;
-      //console.log("treeData: ");
-      //console.log(treeData);
-      //console.log("root: ");
-      //console.log(root);
-      root.name = root.ori_text;
-      //console.log(root);
-    }
-
     return (
       <Column bindToDocument={!multiColumn} label={intl.formatMessage(messages.detailedStatus)}>
         <ColumnHeader
@@ -568,7 +543,7 @@ class Status extends ImmutablePureComponent {
 
               {showTree ?
                 <Tree
-                  data={root}
+                  data={treeData}
                   height={800}
 	                width={svgWidth}
                   animated
