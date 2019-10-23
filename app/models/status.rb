@@ -362,7 +362,7 @@ class Status < ApplicationRecord
       starting_scope = local_only ? Status.local : Status
       starting_scope
         .with_public_visibility
-        .without_reblogs
+        #.without_reblogs
     end
 
     def apply_timeline_filters(query, account, local_only)
