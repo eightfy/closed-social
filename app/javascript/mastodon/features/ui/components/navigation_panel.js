@@ -11,6 +11,7 @@ import TrendsContainer from 'mastodon/features/getting_started/containers/trends
 const NavigationPanel = () => (
   <div className='navigation-panel'>
     <NavLink className='column-link column-link--transparent' to='/timelines/home' data-preview-title-id='column.home' data-preview-icon='home' ><Icon className='column-link__icon' id='home' fixedWidth /><FormattedMessage id='tabs_bar.home' defaultMessage='Home' /></NavLink>
+    <NavLink className='column-link column-link--transparent' to='/statuses/102995298871197915' data-preview-title-id='column.tree' data-preview-icon='tree' ><Icon className='column-link__icon' id='tree' fixedWidth /><FormattedMessage id='tabs_bar.tree' defaultMessage='Tree' /></NavLink>
     <NavLink className='column-link column-link--transparent' to='/notifications' data-preview-title-id='column.notifications' data-preview-icon='bell' ><NotificationsCounterIcon className='column-link__icon' /><FormattedMessage id='tabs_bar.notifications' defaultMessage='Notifications' /></NavLink>
     <FollowRequestsNavLink />
     <NavLink className='column-link column-link--transparent' to='/timelines/public/local' data-preview-title-id='column.community' data-preview-icon='users' ><Icon className='column-link__icon' id='users' fixedWidth /><FormattedMessage id='tabs_bar.local_timeline' defaultMessage='Local' /></NavLink>
