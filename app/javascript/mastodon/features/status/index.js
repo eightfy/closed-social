@@ -549,8 +549,8 @@ class Status extends ImmutablePureComponent {
                   animated
                   keyProp = {"statusId"}
                   textProps={{
-                    dx: -4,
-                    dy: -6
+                    x: -9,
+                    y: -7
                   }}
                   gProps={{
 					          className: 'node',
