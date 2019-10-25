@@ -52,8 +52,11 @@ export function unreblog(status) {
   return (dispatch, getState) => {
     dispatch(unreblogRequest(status));
 
+    let old_reblogs_count = status.get('reblogs_count');
     api(getState).post(`/api/v1/statuses/${status.get('id')}/unreblog`).then(response => {
-      dispatch(importFetchedStatus(response.data));
+      let pred = response.data
+      pred.reblogs_count = old_reblogs_count - 1; // unreb is async
+      dispatch(importFetchedStatus(pred));
       dispatch(unreblogSuccess(status));
     }).catch(error => {
       dispatch(unreblogFail(status, error));
@@ -128,8 +131,11 @@ export function unfavourite(status) {
   return (dispatch, getState) => {
     dispatch(unfavouriteRequest(status));
 
+    let old_favourites_count = status.get('favourites_count');
     api(getState).post(`/api/v1/statuses/${status.get('id')}/unfavourite`).then(response => {
-      dispatch(importFetchedStatus(response.data));
+      let pred = response.data
+      pred.favourites_count = old_favourites_count - 1; // unfav is async
+      dispatch(importFetchedStatus(pred));
       dispatch(unfavouriteSuccess(status));
     }).catch(error => {
       dispatch(unfavouriteFail(status, error));

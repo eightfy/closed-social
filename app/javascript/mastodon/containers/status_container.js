@@ -20,6 +20,7 @@ import {
   deleteStatus,
   hideStatus,
   revealStatus,
+  fetchContext,
 } from '../actions/statuses';
 import { initMuteModal } from '../actions/mutes';
 import { initBlockModal } from '../actions/blocks';
@@ -161,6 +162,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     } else {
       dispatch(hideStatus(status.get('id')));
     }
+  },
+
+  onPreview (id) {
+    dispatch(fetchContext(id));
   },
 
 });
