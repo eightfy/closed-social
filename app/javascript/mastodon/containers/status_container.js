@@ -42,10 +42,13 @@ const messages = defineMessages({
 const makeMapStateToProps = () => {
   const getStatus = makeGetStatus();
 
-  const mapStateToProps = (state, props) => ({
-    status: getStatus(state, props),
-    sonsIds: 'com_prev' in props ? state.getIn(['contexts', 'replies', props.id]) : null,
-  });
+  const mapStateToProps = (state, props) => {
+    const status = getStatus(state, props);
+    return ({
+      status: getStatus(state, props),
+      sonsIds: 'com_prev' in props ? state.getIn(['contexts', 'replies', status.getIn(['reblog', 'id'], props.id)]) : null,
+    })
+  }
 
   return mapStateToProps;
 };

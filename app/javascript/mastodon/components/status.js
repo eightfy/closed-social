@@ -107,15 +107,12 @@ class Status extends ImmutablePureComponent {
   state = {
     showMedia: defaultMediaVisibility(this.props.status),
     statusId: undefined,
+    noPreviewData: true,
   };
 
   // Track height changes we know about to compensate scrolling
   componentDidMount () {
     this.didShowCard = !this.props.muted && !this.props.hidden && this.props.status && this.props.status.get('card');
-    if(this.props.com_prev) {
-      const { status } = this.props;
-      this.props.onPreview(status.get('id'));
-    }
   }
 
   getSnapshotBeforeUpdate () {
@@ -181,6 +178,13 @@ class Status extends ImmutablePureComponent {
     this.context.router.history.push(`/statuses/${status.getIn(['reblog', 'id'], status.get('id'))}`);
   }
 
+  handleMouseEnter = () => {
+    if(this.props.com_prev && this.state.noPreviewData) {
+      const { status } = this.props
+      this.props.onPreview(status.getIn(['reblog', 'id'], status.get('id')));
+      this.setState({noPreviewData: false});
+    }
+  }
   handleExpandClick = (e) => {
     if (this.props.onClick) {
       this.props.onClick();
@@ -477,7 +481,7 @@ class Status extends ImmutablePureComponent {
         <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), read: unread === false, focusable: !this.props.muted }, (deep!=null) && 'tree-'+tree_type)} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
           {prepend}
 
-          <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted, read: unread === false })} data-id={status.get('id')} >
+          <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted, read: unread === false })} data-id={status.get('id')} onMouseEnter={this.handleMouseEnter}>
             <div className='status__expand' onClick={this.handleExpandClick} role='presentation' />
             <div className='status__info'>
               <a href={status.get('url')} className='status__relative-time' target='_blank' rel='noopener'><RelativeTimestamp timestamp={status.get('created_at')} /></a>
