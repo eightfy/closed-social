@@ -12,6 +12,8 @@ module DomainControlHelper
       end
     end
 
+	return !domain.end_with?('closed.social')
+
     if whitelist_mode?
       !DomainAllow.allowed?(domain)
     else
