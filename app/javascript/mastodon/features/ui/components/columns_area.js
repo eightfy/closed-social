@@ -159,7 +159,6 @@ class ColumnsArea extends ImmutablePureComponent {
       React.cloneElement(this.props.children) :
       <ColumnLoading title={title} icon={icon} />;
 
-    console.log(link.props);
     return (
       <div className='columns-area columns-area--mobile' key={index}>
         {
