@@ -31,6 +31,8 @@ import NavigationPanel from './navigation_panel';
 import detectPassiveEvents from 'detect-passive-events';
 import { scrollRight } from '../../../scroll';
 
+import TrendsContainer from '../../getting_started/containers/trends_container';
+
 const componentMap = {
   'COMPOSE': Compose,
   'HOME': HomeTimeline,
@@ -157,8 +159,13 @@ class ColumnsArea extends ImmutablePureComponent {
       React.cloneElement(this.props.children) :
       <ColumnLoading title={title} icon={icon} />;
 
+    console.log(link.props);
     return (
       <div className='columns-area columns-area--mobile' key={index}>
+        {
+          link.props['data-preview-title-id'] == 'column.community' && 
+          <TrendsContainer />
+        } 
         {view}
       </div>
     );
