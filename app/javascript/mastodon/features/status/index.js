@@ -126,10 +126,10 @@ const makeMapStateToProps = () => {
     const getMore = (id, notRoot) => {
       const replies = contextReplies.get(id);
       const cur_status = statuses.get(id);
-      const text = cur_status.get('search_index');
+      const text = cur_status.get('search_index').replace(/@\S+?\s/,'@..');
       return {
         statusId: id,
-        name: ((notRoot && text.length > 13) ? text.slice(0,10) + "..." : text) + (cur_status.get('media_attachments').size > 0 ? " [图片]" : ""),
+        name: (text.length > 16 ? text.slice(0,13) + "..." : text) + (cur_status.get('media_attachments').size > 0 ? " [图片]" : ""),
         children: replies ? Array.from(replies.map( i => getMore(i, true) )) : [],
       }
     }
@@ -545,7 +545,7 @@ class Status extends ImmutablePureComponent {
                 <Tree
                   data={treeData}
                   height={800}
-	                width={svgWidth}
+	                width={svgWidth+80}
                   animated
                   keyProp = {"statusId"}
                   textProps={{
