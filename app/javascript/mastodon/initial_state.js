@@ -26,5 +26,6 @@ export const showTrends = getMeta('trends');
 export const title = getMeta('title');
 
 export const treeRoot = getMeta('tree_root');
+export const pinnedInfo = getMeta('pinned_info');
 
 export default initialState;
