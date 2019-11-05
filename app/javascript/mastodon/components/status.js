@@ -108,6 +108,7 @@ class Status extends ImmutablePureComponent {
     showMedia: defaultMediaVisibility(this.props.status),
     statusId: undefined,
     noPreviewData: true,
+    noStartPD: true
   };
 
   // Track height changes we know about to compensate scrolling
@@ -175,16 +176,27 @@ class Status extends ImmutablePureComponent {
     }
 
     const { status } = this.props;
+    const r_status = status.get('reblog') || status;
+    if(this.props.com_prev && this.state.noPreviewData && r_status.get('replies_count')) {
+      if(this.state.noStartPD)
+        this.handleMouseEnter();
+      return;
+    }
     this.context.router.history.push(`/statuses/${status.getIn(['reblog', 'id'], status.get('id'))}`);
   }
 
   handleMouseEnter = () => {
-    if(this.props.com_prev && this.state.noPreviewData) {
-      const { status } = this.props
-      this.props.onPreview(status.getIn(['reblog', 'id'], status.get('id')));
-      this.setState({noPreviewData: false});
+    const { status } = this.props;
+    const r_status = status.get('reblog') || status;
+    if(this.props.com_prev && this.state.noStartPD && r_status.get('replies_count')) {
+      this.setState({noStartPD: false});
+      setTimeout(() => {
+        this.props.onPreview(r_status.get('id'));
+        this.setState({noPreviewData: false});
+      },500);
     }
   }
+
   handleExpandClick = (e) => {
     if (this.props.onClick) {
       this.props.onClick();
@@ -459,7 +471,7 @@ class Status extends ImmutablePureComponent {
       statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
     }
 
-  if(status.get('in_reply_to_id') == null && sonsIds && sonsIds.size > 0) {
+  if(sonsIds && sonsIds.size > 0) {
     sons = <div className='comments_timeline'>{this.renderChildren(sonsIds)}</div>;
   }
     
