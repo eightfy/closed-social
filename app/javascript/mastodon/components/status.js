@@ -512,7 +512,7 @@ class Status extends ImmutablePureComponent {
 
             {media}
 
-            {showThread && status.get('in_reply_to_id') && status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) && (
+            {showThread && status.get('in_reply_to_id') && (
               <button className='status__content__read-more-button' onClick={this.handleClick}>
                 <FormattedMessage id='status.show_thread' defaultMessage='Show thread' />
               </button>
