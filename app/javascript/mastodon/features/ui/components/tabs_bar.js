@@ -8,6 +8,7 @@ import Icon from 'mastodon/components/icon';
 import NotificationsCounterIcon from './notifications_counter_icon';
 
 import { treeRoot, pinnedInfo } from '../../../initial_state';
+import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 
 export const links = [
   <NavLink className='tabs-bar__link' to='/timelines/home' data-preview-title-id='column.home' data-preview-icon='home' ><Icon id='home' fixedWidth /><FormattedMessage id='tabs_bar.home' defaultMessage='Home' /></NavLink>,
@@ -83,8 +84,8 @@ class TabsBar extends React.PureComponent {
 
         <div id='tabs-bar__portal' />
         { pinnedInfo &&
-          <div className="hero-widget__text pinned-info">
-            <p>{pinnedInfo}</p>
+          <div className='hero-widget__text pinned-info'>
+            {ReactHtmlParser(pinnedInfo)}
           </div>
         }
       </div>
