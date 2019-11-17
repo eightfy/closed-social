@@ -1008,6 +1008,7 @@ zh-CN:
     contrast: Mastodon（高对比度）
     default: Mastodon（暗色主题）
     mastodon-light: Mastodon（亮色主题）
+    thu: closed.social（清华紫）
   time:
     formats:
       default: "%Y年%-m月%d日 %H:%M"
