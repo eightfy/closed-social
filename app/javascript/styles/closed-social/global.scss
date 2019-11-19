@@ -1,8 +1,20 @@
 .column {
 	flex: 1 0 auto;
 }
+
 .pinned-info {
 	opacity: 0.85;
+  font-size: 15px;
+  padding: 10px 20px;
+}
+
+.pinned-info__icon {
+  .fa {
+    position: absolute;
+    bottom: 16px;
+    right: 10px;
+    cursor: pointer;
+  }
 }
 
 div {

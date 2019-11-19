@@ -37,6 +37,10 @@ class TabsBar extends React.PureComponent {
     history: PropTypes.object.isRequired,
   }
 
+  state = {
+    showPinned: true,
+  }
+
   setRef = ref => {
     this.node = ref;
   }
@@ -73,8 +77,13 @@ class TabsBar extends React.PureComponent {
 
   }
 
+  handleClear = () => {
+    this.setState({ showPinned: false});
+  }
+
   render () {
     const { intl: { formatMessage } } = this.props;
+    const { showPinned } = this.state;
 
     return (
       <div className='tabs-bar__wrapper'>
@@ -83,9 +92,12 @@ class TabsBar extends React.PureComponent {
         </nav>
 
         <div id='tabs-bar__portal' />
-        { pinnedInfo &&
+        { pinnedInfo && showPinned &&
           <div className='hero-widget__text pinned-info'>
             {ReactHtmlParser(pinnedInfo)}
+            <div className='pinned-info__icon' onClick={this.handleClear}>
+              <Icon id='times-circle' />
+            </div>
           </div>
         }
       </div>
