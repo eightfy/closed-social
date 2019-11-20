@@ -1,20 +1,28 @@
 .comments_timeline {
-	max-height: 160px;
+	height: 160px;
 	overflow: hidden;
 	-webkit-mask-image: linear-gradient(#1a1a1a,transparent);
 	mask-image: linear-gradient(#1a1a1a,transparent);
 	transform: scale(0.85);
-	transform-origin: 80% 0%;
+	transform-origin: 100% 0%;
 	margin-bottom: -32px;
+  position: relative;
+  z-index:99;
 	&:hover {
-		max-height: 420px;
+	  overflow: visible;
 		-webkit-mask-image: none;
 		mask-image: none;
+    > div {
+      background: lighten($ui-base-color, 5%);
+    }
 	}
 	&:active {
-		max-height: 420px;
+	  overflow: visible;
 		-webkit-mask-image: none;
 		mask-image: none;
+    > div {
+      background: lighten($ui-base-color, 5%);
+    }
 	}
 }
 
