@@ -472,7 +472,7 @@ class Status extends ImmutablePureComponent {
     }
 
   if(sonsIds && sonsIds.size > 0) {
-    sons = <div className='comments_timeline'>{this.renderChildren(sonsIds)}</div>;
+    sons = <div className='comments-timeline__wrapper'><div className='comments-timeline'>{this.renderChildren(sonsIds)}</div></div>;
   }
     
     let deepRec;
