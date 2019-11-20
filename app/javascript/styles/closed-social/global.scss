@@ -6,12 +6,15 @@
 	opacity: 0.85;
   font-size: 15px;
   padding: 10px 20px;
+  a {
+    color: #3fadfd;
+  }
 }
 
 .pinned-info__icon {
   .fa {
     position: absolute;
-    bottom: 16px;
+    bottom: 10px;
     right: 10px;
     cursor: pointer;
   }
