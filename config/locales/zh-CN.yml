@@ -16,7 +16,7 @@ zh-CN:
     contact_missing: 未设定
     contact_unavailable: 未公开
     discover_users: 发现用户
-    documentation: 文档
+    documentation: 指南
     federation_hint_html: 在%{instance} 上拥有账户后，你可以关注其他闭社站点的人。
     get_apps: 尝试移动应用
     hosted_on: 一个在 %{domain} 上运行的闭社实例

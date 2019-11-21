@@ -14,7 +14,7 @@
             - unless whitelist_mode?
               = link_to t('directories.directory'), explore_path, class: 'nav-link optional' if Setting.profile_directory
               = link_to t('about.about_this'), about_more_path, class: 'nav-link optional'
-              = link_to t('about.apps'), 'https://joinmastodon.org/apps', class: 'nav-link optional'
+              = link_to t('about.apps'), 'https://closed.social/apps', class: 'nav-link optional'
 
           .nav-center
 
@@ -52,6 +52,6 @@
             %h4= t 'footer.more'
             %ul
               %li= link_to t('about.source_code'), Mastodon::Version.source_url
-              %li= link_to t('about.apps'), 'https://joinmastodon.org/apps'
+              %li= link_to t('about.apps'), 'https://closed.social/apps'
 
 = render template: 'layouts/application'
