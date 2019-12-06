@@ -18,6 +18,9 @@ import { mascot, treeRoot } from '../../initial_state';
 import Icon from 'mastodon/components/icon';
 import { logOut } from 'mastodon/utils/log_out';
 
+import { pinnedInfo } from '../../initial_state';
+import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
+
 const messages = defineMessages({
   start: { id: 'getting_started.heading', defaultMessage: 'Getting started' },
   home_timeline: { id: 'tabs_bar.home', defaultMessage: 'Home' },
@@ -49,6 +52,10 @@ class Compose extends React.PureComponent {
     isSearchPage: PropTypes.bool,
     intl: PropTypes.object.isRequired,
   };
+
+  state = {
+    showPinned: true,
+  }
 
   componentDidMount () {
     const { isSearchPage } = this.props;
@@ -88,9 +95,14 @@ class Compose extends React.PureComponent {
   onBlur = () => {
     this.props.dispatch(changeComposing(false));
   }
+  
+  handleClear = () => {
+    this.setState({ showPinned: false});
+  }
 
   render () {
     const { multiColumn, showSearch, isSearchPage, intl } = this.props;
+    const { showPinned } = this.state;
 
     let header = '';
 
@@ -125,6 +137,15 @@ class Compose extends React.PureComponent {
         {header}
 
         {(multiColumn || isSearchPage) && <SearchContainer /> }
+
+        { pinnedInfo && showPinned &&
+          <div className='hero-widget__text pinned-info'>
+            {ReactHtmlParser(pinnedInfo)}
+            <div className='pinned-info__icon' onClick={this.handleClear}>
+              <Icon id='times-circle' />
+            </div>
+          </div>
+        }
 
         <div className='drawer__pager'>
           {!isSearchPage && <div className='drawer__inner' onFocus={this.onFocus}>
