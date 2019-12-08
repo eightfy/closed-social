@@ -138,7 +138,7 @@ class Compose extends React.PureComponent {
 
         {(multiColumn || isSearchPage) && <SearchContainer /> }
 
-        { pinnedInfo && showPinned &&
+        { pinnedInfo && showPinned && multiColumn &&
           <div className='hero-widget__text pinned-info'>
             {ReactHtmlParser(pinnedInfo)}
             <div className='pinned-info__icon' onClick={this.handleClear}>
