@@ -107,13 +107,15 @@ class Status extends ImmutablePureComponent {
   state = {
     showMedia: defaultMediaVisibility(this.props.status),
     statusId: undefined,
-    noPreviewData: true,
     noStartPD: true
   };
 
+  _isMounted = false;
   // Track height changes we know about to compensate scrolling
   componentDidMount () {
     this.didShowCard = !this.props.muted && !this.props.hidden && this.props.status && this.props.status.get('card');
+    this._isMounted = true;
+    setTimeout(this.loadContext, Math.ceil(Math.random() * 4000 + 1000));
   }
 
   getSnapshotBeforeUpdate () {
@@ -159,6 +161,8 @@ class Status extends ImmutablePureComponent {
         });
       }
     }
+    
+    this._isMounted = false;
   }
 
   handleToggleMediaVisibility = () => {
@@ -176,24 +180,19 @@ class Status extends ImmutablePureComponent {
     }
 
     const { status } = this.props;
-    const r_status = status.get('reblog') || status;
-    if(this.props.showThread && this.state.noPreviewData && r_status.get('replies_count')) {
-      if(this.state.noStartPD)
-        this.handleMouseEnter();
-      return;
-    }
     this.context.router.history.push(`/statuses/${status.getIn(['reblog', 'id'], status.get('id'))}`);
   }
 
-  handleMouseEnter = () => {
+  loadContext = () => {
+    if(!this._isMounted) {
+      //console.log('cancel');
+      return;
+    }
     const { status } = this.props;
     const r_status = status.get('reblog') || status;
-    if(this.props.showThread && this.state.noStartPD && r_status.get('replies_count')) {
+    if(this.props.showThread && this.state.noStartPD && (r_status.get('replies_count') || r_status.get('in_reply_to_id'))) {
       this.setState({noStartPD: false});
-      setTimeout(() => {
-        this.props.onPreview(r_status.get('id'));
-        this.setState({noPreviewData: false});
-      },500);
+      this.props.onPreview(r_status.get('id'));
     }
   }
 
@@ -505,7 +504,7 @@ class Status extends ImmutablePureComponent {
         <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), read: unread === false, focusable: !this.props.muted }, (deep!=null) && 'tree-'+tree_type)} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
           {prepend}
 
-          <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted, read: unread === false })} data-id={status.get('id')} onMouseEnter={this.handleMouseEnter}>
+          <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted, read: unread === false })} data-id={status.get('id')}>
             <div className='status__expand' onClick={this.handleExpandClick} role='presentation' />
             <div className='status__info'>
               <a href={status.get('url')} className='status__relative-time' target='_blank' rel='noopener'><RelativeTimestamp timestamp={status.get('created_at')} /></a>
