@@ -4,7 +4,7 @@ class TrendingTags
   KEY                  = 'trending_tags'
   EXPIRE_HISTORY_AFTER = 7.days.seconds
   EXPIRE_TRENDS_AFTER  = 1.day.seconds
-  THRESHOLD            = 5
+  THRESHOLD            = 3
   LIMIT                = 10
   REVIEW_THRESHOLD     = 3
   MAX_SCORE_COOLDOWN   = 2.days.freeze
@@ -38,7 +38,7 @@ class TrendingTags
         max_score = 0 if max_time.nil? || max_time < (at_time - MAX_SCORE_COOLDOWN)
 
         score = begin
-          if expected > observed || observed < THRESHOLD
+          if expected > observed #|| observed < THRESHOLD
             0
           else
             ((observed - expected)**2) / expected

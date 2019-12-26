@@ -6,6 +6,7 @@ em.addEventListener("blur", function( event ) {
 	if(ap.style.display != 'none' && em.value) {
 		em.value+=ap.innerText;
 		ap.style.display = 'none';
+		alert('注意:清华邮箱收取外部邮件会有至多十分钟的延迟，完成注册后请稍后再查收邮件')
 	}
 });
 
