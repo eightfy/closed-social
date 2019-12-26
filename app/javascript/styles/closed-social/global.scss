@@ -47,4 +47,21 @@ div {
   }
 }
 
+.status__quote__wrapper {
+  margin-top:16px;
+  border-left: 5px solid #dbdbdb80;
+  background: #dbdbdb40;
+ 
+  .status {
+      padding-left:40px;
+
+      .status__action-bar {
+        display: none;
+      }
+      .status__avatar {
+	      transform: scale(0.5);
+	      transform-origin: 0% 0%;
+      }
+  }
+}
 

@@ -177,7 +177,7 @@ class Status extends ImmutablePureComponent {
 
     const { status } = this.props;
     const r_status = status.get('reblog') || status;
-    if(this.props.com_prev && this.state.noPreviewData && r_status.get('replies_count')) {
+    if(this.props.showThread && this.state.noPreviewData && r_status.get('replies_count')) {
       if(this.state.noStartPD)
         this.handleMouseEnter();
       return;
@@ -188,7 +188,7 @@ class Status extends ImmutablePureComponent {
   handleMouseEnter = () => {
     const { status } = this.props;
     const r_status = status.get('reblog') || status;
-    if(this.props.com_prev && this.state.noStartPD && r_status.get('replies_count')) {
+    if(this.props.showThread && this.state.noStartPD && r_status.get('replies_count')) {
       this.setState({noStartPD: false});
       setTimeout(() => {
         this.props.onPreview(r_status.get('id'));
@@ -305,7 +305,7 @@ class Status extends ImmutablePureComponent {
         id={id}
         onMoveUp={()=>{}}
         onMoveDown={()=>{}}
-        contextType='thread'
+        contextType='comments-timeline'
       />
     ));
     
@@ -314,7 +314,7 @@ class Status extends ImmutablePureComponent {
   render () {
     let media = null;
     let statusAvatar, prepend, rebloggedByText;
-    let sons;
+    let sons, quote;
 
     const { intl, hidden, featured, otherAccounts, unread, showThread, deep, tree_type, sonsIds } = this.props;
 
@@ -471,9 +471,21 @@ class Status extends ImmutablePureComponent {
       statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
     }
 
-  if(sonsIds && sonsIds.size > 0) {
-    sons = <div className='comments-timeline__wrapper'><div className='comments-timeline'>{this.renderChildren(sonsIds)}</div></div>;
-  }
+    if (sonsIds && sonsIds.size > 0) {
+      sons = <div className='comments-timeline__wrapper'><div className='comments-timeline'>{this.renderChildren(sonsIds)}</div></div>;
+    }
+
+    if (rebloggedByText && status.get('in_reply_to_id')) {
+      quote = <div className='status__quote__wrapper'>
+                  <StatusContainer
+                    key={status.get('in_reply_to_id')}
+                    id={status.get('in_reply_to_id')}
+                    onMoveUp={()=>{}}
+                    onMoveDown={()=>{}}
+                    contextType='quote'
+                  />
+              </div>;
+    }
     
     let deepRec;
     if(deep != null) {
@@ -512,6 +524,8 @@ class Status extends ImmutablePureComponent {
 
             {media}
 
+            {quote}
+          
             {showThread && status.get('in_reply_to_id') && (
               <button className='status__content__read-more-button' onClick={this.handleClick}>
                 <FormattedMessage id='status.show_thread' defaultMessage='Show thread' />
