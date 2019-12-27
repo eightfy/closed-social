@@ -190,7 +190,7 @@ class Status extends ImmutablePureComponent {
     }
     const { status } = this.props;
     const r_status = status.get('reblog') || status;
-    if(this.props.showThread && this.state.noStartPD && (r_status.get('replies_count') || r_status.get('in_reply_to_id'))) {
+    if(this.props.showThread && this.state.noStartPD && (r_status.get('replies_count') || r_status.get('in_reply_to_id') || r_status.get('visibility') == 'private')) {
       this.setState({noStartPD: false});
       this.props.onPreview(r_status.get('id'));
     }
