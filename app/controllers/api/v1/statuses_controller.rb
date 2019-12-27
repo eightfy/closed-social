@@ -23,7 +23,11 @@ class Api::V1::StatusesController < Api::BaseController
 
   def context
     ancestors_results   = @status.in_reply_to_id.nil? ? [] : @status.ancestors(CONTEXT_LIMIT, current_account)
-    descendants_results = @status.descendants(CONTEXT_LIMIT, current_account)
+    
+    treeId = ENV['TREE_ADDRESS'].split('/')[-1].to_i
+    isTree = @status.id == treeId || (!ancestors_results.empty? && ancestors_results[0].id == treeId)
+
+    descendants_results = @status.descendants(CONTEXT_LIMIT, current_account, nil, nil, isTree ? 2 : nil)
     loaded_ancestors    = cache_collection(ancestors_results, Status)
     loaded_descendants  = cache_collection(descendants_results, Status)
 

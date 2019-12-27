@@ -480,8 +480,6 @@ class Status extends ImmutablePureComponent {
   }
 
   handleNodeClick = (ev, node) => {
-    console.log(node);
-
     if (!this.context.router) {
       return;
     }
