@@ -181,7 +181,19 @@ class Item extends React.PureComponent {
       const x      = ((focusX /  2) + .5) * 100;
       const y      = ((focusY / -2) + .5) * 100;
 
-      thumbnail = (
+      const descrip = attachment.get('description');
+      thumbnail = (descrip && descrip.startsWith('https://'))?
+        (
+          <iframe 
+            src={descrip} 
+            width='100%' 
+            height='100%' 
+            scrolling='no'
+            onLoad={this.handleImageLoad}
+          ></iframe>
+        )
+        :
+        (
         <a
           className='media-gallery__item-thumbnail'
           href={attachment.get('remote_url') || originalUrl}
