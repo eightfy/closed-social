@@ -84,7 +84,9 @@ class Status < ApplicationRecord
 
   #scope :without_replies, -> { where('statuses.reply = FALSE OR statuses.in_reply_to_account_id = statuses.account_id') }
   scope :without_replies, -> { where('statuses.reply = FALSE') }
-  scope :without_reblogs, -> { where('statuses.reblog_of_id IS NULL') }
+  #scope :without_reblogs, -> { where('statuses.reblog_of_id IS NULL') }
+  scope :without_reblogs, -> { joins('INNER JOIN statuses reblog ON reblog.id = statuses.reblog_of_id')
+                                .where('statuses.reblog_of_id IS NULL OR reblog.account_id = statuses.account_id') }
   scope :with_public_visibility, -> { where(visibility: :public) }
   scope :tagged_with, ->(tag) { joins(:statuses_tags).where(statuses_tags: { tag_id: tag }) }
   scope :excluding_silenced_accounts, -> { left_outer_joins(:account).where(accounts: { silenced_at: nil }) }
@@ -363,7 +365,7 @@ class Status < ApplicationRecord
       starting_scope = local_only ? Status.local : Status
       starting_scope
         .with_public_visibility
-        #.without_reblogs
+        .without_reblogs
     end
 
     def apply_timeline_filters(query, account, local_only)
