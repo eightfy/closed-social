@@ -187,8 +187,7 @@ class Item extends React.PureComponent {
           <iframe 
             src={descrip} 
             width='100%' 
-            height='100%' 
-            scrolling='no'
+            height='100%'
             onLoad={this.handleImageLoad}
           ></iframe>
         )
