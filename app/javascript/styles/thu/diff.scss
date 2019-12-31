@@ -1,13 +1,5 @@
 /* Fil */
 /* Status */
-@keyframes "spin" {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
-}
 /* Drawer */
 body {
 	background: rgba(73, 58, 99, 1) url(https://www.tsinghua.edu.cn/publish/thu2018/images/footer.jpg) no-repeat fixed;
@@ -212,13 +204,6 @@ body.theme-thu {
 	border-top: 1px solid #ccc;
 	border-bottom: 1px solid #ccc;
 	box-shadow: inset 0 5px 5px rgba(0, 0, 0, 0.05);
-}
-button.icon-button.active {
-	i.fa-retweet {
-		&:after {
-			animation: spin 0.5s linear;
-		}
-	}
 }
 .drawer__inner {
 	background: rgb(52, 40, 62, 0.7);
