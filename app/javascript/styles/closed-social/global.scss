@@ -76,8 +76,34 @@ div {
     transform: scale(1);
   }
 }
-.no-reduce-motion .icon-button.active {
-	i.fa-heart {
-			animation: like 1s;
-	}
+
+@keyframes unlike {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(240deg);
+  }
+  80% {
+    transform: rotateY(140deg);
+  }
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+.no-reduce-motion .icon-button.star-icon {
+  &.activate {
+    & > .fa-heart {
+      animation: like 1s linear;
+    }
+  }
+}
+
+.no-reduce-motion .icon-button.star-icon {
+  &.deactivate {
+    & > .fa-heart {
+      animation: unlike 1s linear;
+    }
+  }
 }
