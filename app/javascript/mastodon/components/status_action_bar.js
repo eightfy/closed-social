@@ -15,6 +15,7 @@ const messages = defineMessages({
   mute: { id: 'account.mute', defaultMessage: 'Mute @{name}' },
   block: { id: 'account.block', defaultMessage: 'Block @{name}' },
   reply: { id: 'status.reply', defaultMessage: 'Reply' },
+  comment: {id: 'status.comment', defaultMessage: 'Comment' },
   share: { id: 'status.share', defaultMessage: 'Share' },
   more: { id: 'status.more', defaultMessage: 'More' },
   replyAll: { id: 'status.replyAll', defaultMessage: 'Reply to thread' },
@@ -237,10 +238,10 @@ class StatusActionBar extends ImmutablePureComponent {
 
     if (status.get('in_reply_to_id', null) === null) {
       replyIcon = 'comment';
-      replyTitle = intl.formatMessage(messages.reply);
+      replyTitle = intl.formatMessage(messages.comment);
     } else {
-      replyIcon = 'comments';
-      replyTitle = intl.formatMessage(messages.replyAll);
+      replyIcon = 'reply';
+      replyTitle = intl.formatMessage(messages.reply);
     }
 
     const shareButton = ('share' in navigator) && status.get('visibility') === 'public' && (
@@ -249,7 +250,7 @@ class StatusActionBar extends ImmutablePureComponent {
 
     return (
       <div className='status__action-bar'>
-        <div className='status__action-bar__counter'><IconButton className='status__action-bar-button' title={replyTitle} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'comments-o' : replyIcon} onClick={this.handleReplyClick} /><span className='status__action-bar__counter__label' >{obfuscatedCount(status.get('replies_count'))}</span></div>
+        <div className='status__action-bar__counter'><IconButton className='status__action-bar-button' title={replyTitle} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'comment-o' : replyIcon} onClick={this.handleReplyClick} /><span className='status__action-bar__counter__label' >{obfuscatedCount(status.get('replies_count'))}</span></div>
         <div className='status__action-bar__counter'><IconButton className='status__action-bar-button' disabled={!publicStatus} active={status.get('reblogged')} pressed={status.get('reblogged')} title={!publicStatus ? intl.formatMessage(messages.cannot_reblog) : intl.formatMessage(messages.reblog)} icon={reblogIcon} onClick={this.handleReblogClick} />{publicStatus && <span className='status__action-bar__counter__label' >{obfuscatedCount(status.get('reblogs_count'))}</span>}</div>
         <div className='status__action-bar__counter'><IconButton className='status__action-bar-button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='heart' onClick={this.handleFavouriteClick} /><span className='status__action-bar__counter__label' >{obfuscatedCount(status.get('favourites_count'))}</span></div>
         {shareButton}

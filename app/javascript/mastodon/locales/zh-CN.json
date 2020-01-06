@@ -369,6 +369,7 @@
   "status.reblogged_by": "{name} 转嘟了",
   "status.reblogs.empty": "没有人转嘟过此条嘟文。如果有人转嘟了，就会显示在这里。",
   "status.redraft": "删除并重新编辑",
+  "status.comment": "评论",
   "status.reply": "回复",
   "status.replyAll": "回复所有人",
   "status.report": "举报 @{name}",
