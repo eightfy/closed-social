@@ -559,6 +559,7 @@ class Status extends ImmutablePureComponent {
                   }}/>
                 :
                 <DetailedStatus
+                  key={`detail-${status.get('id')}`}
                   status={status}
                   deep={deep}
                   onOpenVideo={this.handleOpenVideo}
@@ -571,6 +572,7 @@ class Status extends ImmutablePureComponent {
               }
 
                 <ActionBar
+                  key={`action-bar-${status.get('id')}`}
                   status={status}
                   onReply={this.handleReplyClick}
                   onFavourite={this.handleFavouriteClick}
