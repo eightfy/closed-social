@@ -128,6 +128,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-hotkeys": "^1.1.4",
+    "react-html-parser": "^2.0.2",
     "react-immutable-proptypes": "^2.1.0",
     "react-immutable-pure-component": "^1.1.1",
     "react-intl": "^2.9.0",
@@ -144,6 +145,7 @@
     "react-swipeable-views": "^0.13.3",
     "react-textarea-autosize": "^7.1.0",
     "react-toggle": "^4.0.1",
+    "react-tree-graph": "^4.0.1",
     "redis": "^2.7.1",
     "redux": "^4.0.4",
     "redux-immutable": "^4.0.0",
@@ -167,9 +169,7 @@
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.3.7",
     "webpack-merge": "^4.2.1",
-    "websocket.js": "^0.1.12",
-    "react-tree-graph":"^4.0.1",
-    "react-html-parser":"^2.0.2"
+    "websocket.js": "^0.1.12"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",
