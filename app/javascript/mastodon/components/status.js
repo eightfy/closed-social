@@ -298,14 +298,28 @@ class Status extends ImmutablePureComponent {
 
 
   renderChildren (list) {
-    return list.map(id => (
+    return list.map(e => (
+      e.id ?
+      <div key={`comments-1-${e.id}`}>
+        <StatusContainer
+          key={e.id}
+          id={e.id}
+          onMoveUp={()=>{}}
+          onMoveDown={()=>{}}
+          contextType='comments-timeline'
+        />
+        { e.sonsIds &&
+          <div key={`comments-2-${e.id}`} className='comments-timeline-2'>{this.renderChildren(e.sonsIds)}</div>
+        }
+      </div>
+      :
       <StatusContainer
-        key={id}
-        id={id}
+        key={e}
+        id={e}
         onMoveUp={()=>{}}
         onMoveDown={()=>{}}
         contextType='comments-timeline'
-      />
+      />  
     ));
     
   }

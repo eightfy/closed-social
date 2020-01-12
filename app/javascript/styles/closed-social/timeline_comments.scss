@@ -7,6 +7,7 @@
 	transform: scale(0.85);
 	transform-origin: 100% 0%;
 	margin-bottom: -32px;
+  margin-right:8px;
   position: absolute;
   z-index:9;
 	&:hover {
@@ -15,13 +16,18 @@
 		mask-image: none;
     z-index:99;
     background: $tc-background;
+    box-shadow: $primary-text-color 3.2px 3.2px 8px;
 	}
 	&:active {
 	  max-height: none;
 		-webkit-mask-image: none;
 		mask-image: none;
     background: $tc-background;
+    box-shadow: $primary-text-color 3.2px 3.2px 8px;
 	}
+  & .comments-timeline-2 {
+    margin-left:40px;
+  }
 }
 
 .comments-timeline__wrapper {
