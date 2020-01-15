@@ -151,7 +151,7 @@ const makeMapStateToProps = () => {
       ancestorsIds = getAncestorsIds(state, { id: status.get('in_reply_to_id') });
       const root_status = ancestorsIds.size? getStatus(state, {id: ancestorsIds.get(0)}) : status; //error is directly visit url of non-root detailedStatus, feature!
       rootAcct = root_status? root_status.getIn(['account', 'acct']) : -1;
-      descendantsIds = rootAcct == '0' ? state.getIn(['contexts', 'replies', status.get('id')]) : getDescendantsIds(state, { id: status.get('id') });
+      descendantsIds = rootAcct == '0' ? state.getIn(['contexts', 'replies', status.get('id')]).reverse() : getDescendantsIds(state, { id: status.get('id') });
       deep      = rootAcct == '0' ? ancestorsIds.size : null;
       treeData = rootAcct == '0' ? getTreeData(state, {id: status.get('id')}) : null;
     }

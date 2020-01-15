@@ -44,7 +44,7 @@ const makeMapStateToProps = () => {
 
   const mapStateToProps = (state, props) => {
     const status = getStatus(state, props); 
-    const sons = state.getIn(['contexts', 'replies', status.getIn(['reblog', 'id'], props.id)]);
+    const sons = (props.showThread && status!==null) ? state.getIn(['contexts', 'replies', status.getIn(['reblog', 'id'], props.id)]) : null;
     return ({
       'status': status,
       'sonsIds': (props.showThread && sons) ? sons.map(id => ({
