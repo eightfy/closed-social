@@ -101,7 +101,8 @@ class Status extends ImmutablePureComponent {
     'account',
     'muted',
     'hidden',
-    'sonsIds'
+    'sonsIds',
+    'ancestorsText',
   ];
 
   state = {
@@ -329,7 +330,7 @@ class Status extends ImmutablePureComponent {
     let statusAvatar, prepend, rebloggedByText;
     let sons, quote;
 
-    const { intl, hidden, featured, otherAccounts, unread, showThread, deep, tree_type, sonsIds } = this.props;
+    const { intl, hidden, featured, otherAccounts, unread, showThread, deep, tree_type, ancestorsText, sonsIds } = this.props;
 
     let { status, account, ...other } = this.props;
 
@@ -489,7 +490,13 @@ class Status extends ImmutablePureComponent {
     }
 
     if (rebloggedByText && status.get('in_reply_to_id')) {
-      quote = <div className='status__quote__wrapper'>
+      quote = ancestorsText ?
+            <div className='status__tree__quote__wrapper'>
+              <Icon id="tree" />
+              {ancestorsText}
+            </div>
+            :
+            <div className='status__quote__wrapper'>
                   <StatusContainer
                     key={status.get('in_reply_to_id')}
                     id={status.get('in_reply_to_id')}
