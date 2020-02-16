@@ -1,3 +1,5 @@
+if(navigator.userAgent.search('MicroMessenger') !== -1)
+	location.href = `https://closed.social/tools/safe_jump/?go=${encodeURIComponent(location.href)}&t=${encodeURIComponent(document.title)}`;
 var em = document.getElementById("registration_user_email");
 if(!em)
   em = document.getElementById("user_email");
