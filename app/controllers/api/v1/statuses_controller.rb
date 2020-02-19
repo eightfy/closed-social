@@ -40,8 +40,10 @@ class Api::V1::StatusesController < Api::BaseController
   def create
     thread = status_params[:in_reply_to_id].blank? ? nil : Status.find(status_params[:in_reply_to_id])
     sender = thread && thread.account.username == 'tree_hole_bot' ? thread.account : current_account
+    st_text = thread && thread.account.username == 'tree_hole_bot' ? ("$#{(7919**(current_account.id+100) % 10000000007).to_s(16)}: " + status_params[:status][0..4900]) : status_params[:status]
+
     @status = PostStatusService.new.call(sender,
-                                         text: status_params[:status],
+                                         text: st_text,
                                          thread: thread,
                                          media_ids: status_params[:media_ids],
                                          sensitive: status_params[:sensitive],
