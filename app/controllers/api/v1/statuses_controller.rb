@@ -37,11 +37,15 @@ class Api::V1::StatusesController < Api::BaseController
     render json: @context, serializer: REST::ContextSerializer, relationships: StatusRelationshipsPresenter.new(statuses, current_user&.account_id)
   end
 
+  def to_cn(n)
+    "甲乙丙丁戊己庚辛壬癸"[n % 10] + [n % 20873, n % 20899].map{|i| i+0x4e00}.pack('U*')
+  end
+
   def create
     thread = status_params[:in_reply_to_id].blank? ? nil : Status.find(status_params[:in_reply_to_id])
     masked = status_params[:status].end_with?('[mask]')
     sender = masked ? Account.find_local('mask_bot') : current_account
-    st_text = masked ? ("$#{(7919**(current_account.id + 1000 * Time.new.day) % 10000000007).to_s(16)}: " + status_params[:status][0..4900]) : status_params[:status]
+    st_text = masked ? ("$#{to_cn(7919**(current_account.id + 1000 * Time.new.day) % 10000000007)}: " + status_params[:status][0..4900]) : status_params[:status]
 
     @status = PostStatusService.new.call(sender,
                                          text: st_text,
