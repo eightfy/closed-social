@@ -26,7 +26,7 @@ class AboutController < ApplicationController
   def terms; end
 
   def jump
-    @jump_url = "https://#{params[:destin]}/#{params[:path]}"
+    @jump_url = "https://#{request.fullpath[6..-1]}"
   end
 
   helper_method :display_blocks?
