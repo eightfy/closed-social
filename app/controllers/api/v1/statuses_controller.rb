@@ -38,7 +38,14 @@ class Api::V1::StatusesController < Api::BaseController
   end
 
   def to_cn(n)
-    "甲乙丙丁戊己庚辛壬癸"[n % 10] + [n % 20873, n % 20899].map{|i| i+0x4e00}.pack('U*')
+    case Time.new.wday
+    when 0, 3
+      "秦汉魏晋隋唐宋元明清"[n % 10] + [n % 20873, n % 20899].map{|i| i+0x4e00}.pack('U*')
+    when 1, 4, 6
+      "甲乙丙丁戊己庚辛壬癸"[n % 10] + [n % 20873, n % 20899].map{|i| i+0x4e00}.pack('U*')
+    else
+      "鼠牛虎兔龙蛇马羊猴鸡狗猪" [n % 12] + [n % 20873, n % 20899].map{|i| i+0x4e00}.pack('U*')
+    end
   end
 
   def create
