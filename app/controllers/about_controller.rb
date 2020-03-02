@@ -7,6 +7,7 @@ class AboutController < ApplicationController
   before_action :set_body_classes, only: :show
   before_action :set_instance_presenter
   before_action :set_expires_in, only: [:show, :more, :terms]
+  before_action :authenticate_user!, only: :jump
 
   skip_before_action :require_functional!, only: [:more, :terms]
 
@@ -23,6 +24,10 @@ class AboutController < ApplicationController
   end
 
   def terms; end
+
+  def jump
+    @jump_url = "https://#{params[:destin]}/#{params[:path]}"
+  end
 
   helper_method :display_blocks?
   helper_method :display_blocks_rationale?

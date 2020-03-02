@@ -451,7 +451,7 @@ Rails.application.routes.draw do
   get '/about/more',   to: 'about#more'
   get '/terms',        to: 'about#terms'
 
-  get '/jump/:destin/(*path)', to: 'jump#index', :constraints  => { :destin => /[0-z\.]+/ }
+  get '/jump/:destin/(*path)', to: 'about#jump', :constraints  => { :destin => /[0-z\.]+/ }
 
   match '/', via: [:post, :put, :patch, :delete], to: 'application#raise_not_found', format: false
   match '*unmatched_route', via: :all, to: 'application#raise_not_found', format: false

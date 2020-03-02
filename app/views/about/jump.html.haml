@@ -1,0 +1,11 @@
+- content_for :page_title do
+  = @jump_url
+
+.grid
+  .column-0
+    .box-widget
+      .rich-formatting
+        %h2= '将前往:'
+        %h4= link_to @jump_url, @jump_url
+  .column-1
+    = render 'application/sidebar'
