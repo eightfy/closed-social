@@ -115,20 +115,20 @@ export default class IconButton extends React.PureComponent {
 
     return (
       <button
-      aria-label={title}
-      aria-pressed={pressed}
-      aria-expanded={expanded}
-      title={title}
-      className={classes}
-      onClick={this.handleClick}
-      onMouseDown={this.handleMouseDown}
-      onKeyDown={this.handleKeyDown}
-      onKeyPress={this.handleKeyPress}
-      style={style}
-      tabIndex={tabIndex}
-      disabled={disabled}
+        aria-label={title}
+        aria-pressed={pressed}
+        aria-expanded={expanded}
+        title={title}
+        className={classes}
+        onClick={this.handleClick}
+        onMouseDown={this.handleMouseDown}
+        onKeyDown={this.handleKeyDown}
+        onKeyPress={this.handleKeyPress}
+        style={style}
+        tabIndex={tabIndex}
+        disabled={disabled}
       >
-      <Icon id={icon} fixedWidth aria-hidden='true' />
+        <Icon id={icon} fixedWidth aria-hidden='true' />
       </button>
     );
   }

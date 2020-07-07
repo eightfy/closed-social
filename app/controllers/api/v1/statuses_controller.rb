@@ -7,8 +7,9 @@ class Api::V1::StatusesController < Api::BaseController
   before_action -> { doorkeeper_authorize! :write, :'write:statuses' }, only:   [:create, :destroy]
   before_action :require_user!, except:  [:show, :context]
   before_action :set_status, only:       [:show, :context]
+  before_action :set_thread, only:       [:create]
 
-  respond_to :json
+  override_rate_limit_headers :create, family: :statuses
 
   # This API was originally unlimited, pagination cannot be introduced without
   # breaking backwards-compatibility. Arbitrarily high number to cover most
@@ -49,14 +50,13 @@ class Api::V1::StatusesController < Api::BaseController
   end
 
   def create
-    thread = status_params[:in_reply_to_id].blank? ? nil : Status.find(status_params[:in_reply_to_id])
     masked = status_params[:status].end_with?('[mask]')
-    sender = masked ? Account.find_local('mask_bot') : current_account
+    sender = masked ? Account.find_local('mask_bot') : current_user.account
     st_text = masked ? ("$#{to_cn(7919**(current_account.id + 1000 * Time.new.day) % 1000000007)}:\n" + status_params[:status][0..4900]) : status_params[:status]
 
     @status = PostStatusService.new.call(sender,
                                          text: st_text,
-                                         thread: thread,
+                                         thread: @thread,
                                          media_ids: status_params[:media_ids],
                                          sensitive: status_params[:sensitive],
                                          spoiler_text: status_params[:spoiler_text],
@@ -64,7 +64,8 @@ class Api::V1::StatusesController < Api::BaseController
                                          scheduled_at: status_params[:scheduled_at],
                                          application: doorkeeper_token.application,
                                          poll: status_params[:poll],
-                                         idempotency: request.headers['Idempotency-Key'])
+                                         idempotency: request.headers['Idempotency-Key'],
+                                         with_rate_limit: true)
 
     render json: @status, serializer: @status.is_a?(ScheduledStatus) ? REST::ScheduledStatusSerializer : REST::StatusSerializer
   end
@@ -85,7 +86,13 @@ class Api::V1::StatusesController < Api::BaseController
     @status = Status.find(params[:id])
     authorize @status, :show?
   rescue Mastodon::NotPermittedError
-    raise ActiveRecord::RecordNotFound
+    not_found
+  end
+
+  def set_thread
+    @thread = status_params[:in_reply_to_id].blank? ? nil : Status.find(status_params[:in_reply_to_id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: I18n.t('statuses.errors.in_reply_not_found') }, status: 404
   end
 
   def status_params

@@ -24,6 +24,7 @@ export const useBlurhash = getMeta('use_blurhash');
 export const usePendingItems = getMeta('use_pending_items');
 export const showTrends = getMeta('trends');
 export const title = getMeta('title');
+export const cropImages = getMeta('crop_images');
 
 export const treeRoot = getMeta('tree_root');
 export const pinnedInfo = getMeta('pinned_info');
