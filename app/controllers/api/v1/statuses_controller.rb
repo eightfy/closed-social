@@ -25,8 +25,8 @@ class Api::V1::StatusesController < Api::BaseController
   def context
     ancestors_results   = @status.in_reply_to_id.nil? ? [] : @status.ancestors(CONTEXT_LIMIT, current_account)
     
-    treeId = ENV['TREE_ADDRESS'].split('/')[-1].to_i
-    depth = @status.id == treeId ? 1 : ((!ancestors_results.empty? && ancestors_results[0].id == treeId) ? 2 : nil)
+    treeId = Rails.configuration.x.tree_address.split('/')[-1].to_i
+    depth = (@status.id == treeId || (!ancestors_results.empty? && ancestors_results[0].id == treeId)) ? 1 : nil
 
     descendants_results = @status.descendants(CONTEXT_LIMIT, current_account, nil, nil, depth)
     loaded_ancestors    = cache_collection(ancestors_results, Status)
@@ -50,9 +50,10 @@ class Api::V1::StatusesController < Api::BaseController
   end
 
   def create
-    masked = status_params[:status].end_with?('[mask]')
-    sender = masked ? Account.find_local('mask_bot') : current_user.account
-    st_text = masked ? ("$#{to_cn(7919**(current_account.id + 1000 * Time.new.day) % 1000000007)}:\n" + status_params[:status][0..4900]) : status_params[:status]
+    p Rails.configuration.x.anon_tag
+    anon = Rails.configuration.x.anon_acc && status_params[:status].end_with?(Rails.configuration.x.anon_tag)
+    sender = anon ? Account.find(Rails.configuration.x.anon_acc) : current_user.account
+    st_text = anon ? ("$#{to_cn(7919**(current_account.id + 1000 * Time.new.day) % 1000000007)}:\n" + status_params[:status][0..4990]) : status_params[:status]
 
     @status = PostStatusService.new.call(sender,
                                          text: st_text,

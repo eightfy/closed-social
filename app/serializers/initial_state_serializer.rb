@@ -22,7 +22,7 @@ class InitialStateSerializer < ActiveModel::Serializer
       mascot: instance_presenter.mascot&.file&.url,
       profile_directory: Setting.profile_directory,
       trends: Setting.trends,
-      tree_root:  ENV['TREE_ADDRESS'], 
+      tree_root:  Rails.configuration.x.tree_address, 
       pinned_info: Setting.site_description,
     }
 

@@ -1,9 +1,0 @@
-# frozen_string_literal: true
-
-Rails.application.configure do
-<<<<<<< HEAD
-  config.x.whitelist_mode = ENV['WHITELIST_MODE'] != 'false'
-=======
-  config.x.whitelist_mode = (ENV['LIMITED_FEDERATION_MODE'] || ENV['WHITELIST_MODE']) == 'true'
->>>>>>> master
-end
