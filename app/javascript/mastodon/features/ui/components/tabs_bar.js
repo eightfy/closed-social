@@ -7,7 +7,7 @@ import { isUserTouching } from '../../../is_mobile';
 import Icon from 'mastodon/components/icon';
 import NotificationsCounterIcon from './notifications_counter_icon';
 
-import { treeRoot, pinnedInfo } from '../../../initial_state';
+import { treeRoot } from '../../../initial_state';
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 
 export const links = [
@@ -92,14 +92,6 @@ class TabsBar extends React.PureComponent {
         </nav>
 
         <div id='tabs-bar__portal' />
-        { pinnedInfo && showPinned &&
-          <div className='hero-widget__text pinned-info'>
-            {ReactHtmlParser(pinnedInfo)}
-            <div className='pinned-info__icon' onClick={this.handleClear}>
-              <Icon id='times-circle' />
-            </div>
-          </div>
-        }
       </div>
     );
   }

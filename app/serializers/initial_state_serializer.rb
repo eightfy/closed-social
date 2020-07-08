@@ -23,7 +23,6 @@ class InitialStateSerializer < ActiveModel::Serializer
       profile_directory: Setting.profile_directory,
       trends: Setting.trends,
       tree_root:  Rails.configuration.x.tree_address, 
-      pinned_info: Setting.site_description,
     }
 
     if object.current_account

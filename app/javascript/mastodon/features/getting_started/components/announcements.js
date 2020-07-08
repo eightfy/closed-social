@@ -16,6 +16,8 @@ import AnimatedNumber from 'mastodon/components/animated_number';
 import TransitionMotion from 'react-motion/lib/TransitionMotion';
 import spring from 'react-motion/lib/spring';
 
+import ReactMarkdown from 'react-markdown';
+
 const messages = defineMessages({
   close: { id: 'lightbox.close', defaultMessage: 'Close' },
   previous: { id: 'lightbox.previous', defaultMessage: 'Previous' },
@@ -71,7 +73,6 @@ class Content extends ImmutablePureComponent {
 
   _updateLinks () {
     const node = this.node;
-
     if (!node) {
       return;
     }
@@ -146,8 +147,11 @@ class Content extends ImmutablePureComponent {
       <div
         className='announcements__item__content'
         ref={this.setRef}
-        dangerouslySetInnerHTML={{ __html: announcement.get('contentHtml') }}
-      />
+      >
+        <ReactMarkdown
+            source={announcement.get('contentHtml')}
+        />
+      </div>
     );
   }
 

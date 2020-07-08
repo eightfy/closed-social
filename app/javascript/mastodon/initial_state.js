@@ -27,6 +27,5 @@ export const title = getMeta('title');
 export const cropImages = getMeta('crop_images');
 
 export const treeRoot = getMeta('tree_root');
-export const pinnedInfo = getMeta('pinned_info');
 
 export default initialState;
