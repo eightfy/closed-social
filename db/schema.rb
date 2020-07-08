@@ -481,7 +481,7 @@ ActiveRecord::Schema.define(version: 2020_06_28_133322) do
     t.index ["user_id", "timeline"], name: "index_markers_on_user_id_and_timeline", unique: true
   end
 
-  create_table "media_attachments", force: :cascade do |t|
+  create_table "media_attachments", id: :bigint, default: -> { "timestamp_id('media_attachments'::text)" }, force: :cascade do |t|
     t.bigint "status_id"
     t.string "file_file_name"
     t.string "file_content_type"
