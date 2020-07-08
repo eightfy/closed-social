@@ -18,7 +18,6 @@ import { mascot, treeRoot } from '../../initial_state';
 import Icon from 'mastodon/components/icon';
 import { logOut } from 'mastodon/utils/log_out';
 
-import { pinnedInfo } from '../../initial_state';
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 
 const messages = defineMessages({
@@ -137,15 +136,6 @@ class Compose extends React.PureComponent {
         {header}
 
         {(multiColumn || isSearchPage) && <SearchContainer /> }
-
-        { pinnedInfo && showPinned && multiColumn &&
-          <div className='hero-widget__text pinned-info'>
-            {ReactHtmlParser(pinnedInfo)}
-            <div className='pinned-info__icon' onClick={this.handleClear}>
-              <Icon id='times-circle' />
-            </div>
-          </div>
-        }
 
         <div className='drawer__pager'>
           {!isSearchPage && <div className='drawer__inner' onFocus={this.onFocus}>

@@ -25,8 +25,7 @@ class REST::AnnouncementSerializer < ActiveModel::Serializer
   end
 
   def content
-    object.text
-    #Formatter.instance.linkify(object.text)
+    Formatter.instance.linkify(object.text)
   end
 
   def reactions

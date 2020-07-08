@@ -109,8 +109,31 @@ class Formatter
     html_entities.encode(html)
   end
 
+  def markdown_link_check(html, entity)
+    indices = entity.respond_to?(:indices) ? entity.indices : entity[:indices]
+    aft_s = html[indices.last ..]
+    bef_s = html[0 .. indices.first-1]
+
+    re = /(!?)\[(.*?)\]\($/
+    if aft_s and bef_s and aft_s.start_with?(')') and bef_s =~ re
+        new_indices = [bef_s =~ re, indices.last+1]
+        new_entity = {
+          indices: new_indices,
+          url: entity[:url],
+          link_text: $2
+        }
+        if $1 == '!'
+          new_entity[:img] = true
+        end
+        new_entity
+    else
+      entity
+    end
+  end
+
   def encode_and_link_urls(html, accounts = nil, options = {})
     entities = utf8_friendly_extractor(html, extract_url_without_protocol: false)
+    entities = entities.map { |entity| entity[:url] ? markdown_link_check(html, entity) : entity  }
 
     if accounts.is_a?(Hash)
       options  = accounts
@@ -254,11 +277,15 @@ class Formatter
 
   def link_to_url(entity, options = {})
     url        = Addressable::URI.parse(entity[:url])
+    if entity[:img]
+      return img_html(entity[:url], entity[:link_text])
+    end
+
     html_attrs = { target: '_blank', rel: 'nofollow noopener noreferrer' }
 
     html_attrs[:rel] = "me #{html_attrs[:rel]}" if options[:me]
 
-    Twitter::Autolink.send(:link_to_text, entity, link_html(entity[:url]), url, html_attrs)
+    Twitter::Autolink.send(:link_to_text, entity, link_html(entity[:url], entity[:link_text]), url, html_attrs)
   rescue Addressable::URI::InvalidURIError, IDN::Idna::IdnaError
     encode(entity[:url])
   end
@@ -285,8 +312,17 @@ class Formatter
     hashtag_html(entity[:hashtag])
   end
 
-  def link_html(url)
+  def img_html(url, alt)
+    "<img class=\"markdown-pic\" src=\"#{url}\" alt=\"#{alt}\" referrerpolicy=\"no-referrer\">"
+  end
+
+  def link_html(url, link_text)
     url    = Addressable::URI.parse(url).to_s
+    
+    if link_text
+        return "<span>#{link_text}</span>"
+    end
+
     prefix = url.match(/\A(https?:\/\/(www\.)?|xmpp:)/).to_s
     text   = url[prefix.length, 30]
     suffix = url[prefix.length + 30..-1]
