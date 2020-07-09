@@ -277,15 +277,13 @@ class Formatter
 
   def link_to_url(entity, options = {})
     url        = Addressable::URI.parse(entity[:url])
-    if entity[:img]
-      return img_html(entity[:url], entity[:link_text])
-    end
 
     html_attrs = { target: '_blank', rel: 'nofollow noopener noreferrer' }
 
     html_attrs[:rel] = "me #{html_attrs[:rel]}" if options[:me]
+    html_attrs[:class] = "media-gallery__item-thumbnail" if entity[:img]
 
-    Twitter::Autolink.send(:link_to_text, entity, link_html(entity[:url], entity[:link_text]), url, html_attrs)
+    Twitter::Autolink.send(:link_to_text, entity, link_html(entity[:url], entity[:link_text], entity[:img]), url, html_attrs)
   rescue Addressable::URI::InvalidURIError, IDN::Idna::IdnaError
     encode(entity[:url])
   end
@@ -312,15 +310,13 @@ class Formatter
     hashtag_html(entity[:hashtag])
   end
 
-  def img_html(url, alt)
-    "<img class=\"markdown-pic\" src=\"#{url}\" alt=\"#{alt}\" referrerpolicy=\"no-referrer\">"
-  end
-
-  def link_html(url, link_text)
+  def link_html(url, link_text, img)
     url    = Addressable::URI.parse(url).to_s
-    
-    if link_text
-        return "<span>#{link_text}</span>"
+   
+    if img
+      return "<img src=\"#{url}\" alt=\"#{link_text}\" referrerpolicy=\"no-referrer\">"
+    elsif link_text
+        return "<span>#{link_text}</span><span class=\"invisible\">#{encode(url)}</span>"
     end
 
     prefix = url.match(/\A(https?:\/\/(www\.)?|xmpp:)/).to_s
