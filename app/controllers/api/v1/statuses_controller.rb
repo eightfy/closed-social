@@ -1,5 +1,21 @@
 # frozen_string_literal: true
 
+class AnonTag
+  @@namelist = (f = Rails.configuration.x.anon_namelist) ? File.readlines(f).collect(&:strip) : ['Alice', 'Bob', 'Carol', 'Dave']
+  @@used_name = []
+  @@map = {}
+
+  def self.get_or_generate(pid)
+    if !@@map[pid]
+      @@map[pid] = (@@namelist - @@used_name).sample()
+      @@used_name.append(@@map[pid])
+    end
+
+    @@map[pid]
+  end
+
+end
+
 class Api::V1::StatusesController < Api::BaseController
   include Authorization
 
@@ -38,22 +54,10 @@ class Api::V1::StatusesController < Api::BaseController
     render json: @context, serializer: REST::ContextSerializer, relationships: StatusRelationshipsPresenter.new(statuses, current_user&.account_id)
   end
 
-  def to_cn(n)
-    case Time.new.wday
-    when 0, 3
-      "秦汉魏晋隋唐宋元明清"[n % 10] + [n % 20873, n % 20899].map{|i| i+0x4e00}.pack('U*')
-    when 1, 4, 6
-      "甲乙丙丁戊己庚辛壬癸"[n % 10] + [n % 20873, n % 20899].map{|i| i+0x4e00}.pack('U*')
-    else
-      "鼠牛虎兔龙蛇马羊猴鸡狗猪" [n % 12] + [n % 20873, n % 20899].map{|i| i+0x4e00}.pack('U*')
-    end
-  end
-
   def create
-    p Rails.configuration.x.anon_tag
-    anon = Rails.configuration.x.anon_acc && status_params[:status].end_with?(Rails.configuration.x.anon_tag)
+    anon = Rails.configuration.x.anon_acc && status_params[:status].end_with?(Rails.configuration.x.anon_tag) && AnonTag.get_or_generate(current_user.account_id) 
     sender = anon ? Account.find(Rails.configuration.x.anon_acc) : current_user.account
-    st_text = anon ? ("$#{to_cn(7919**(current_account.id + 1000 * Time.new.day) % 1000000007)}:\n" + status_params[:status][0..4990]) : status_params[:status]
+    st_text = anon ? ("[#{anon}]:\n#{status_params[:status]}"[0..5000]) : status_params[:status]
 
     @status = PostStatusService.new.call(sender,
                                          text: st_text,
