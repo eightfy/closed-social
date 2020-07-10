@@ -17,10 +17,10 @@ end
 class Request
   REQUEST_TARGET = '(request-target)'
 
-  # We enforce a 15s timeout on DNS resolving, 15s timeout on socket opening
-  # and 15s timeout on the TLS handshake, meaning the worst case should take
-  # about 45s in total
-  TIMEOUT = { connect: 15, read: 30, write: 30 }.freeze
+  # We enforce a 5s timeout on DNS resolving, 5s timeout on socket opening
+  # and 5s timeout on the TLS handshake, meaning the worst case should take
+  # about 15s in total
+  TIMEOUT = { connect: 5, read: 10, write: 10 }.freeze
 
   include RoutingHelper
 
@@ -32,9 +32,7 @@ class Request
     @http_client = options.delete(:http_client)
     @options     = options.merge(socket_class: use_proxy? ? ProxySocket : Socket)
     @options     = @options.merge(Rails.configuration.x.http_client_proxy) if use_proxy?
-    @headers     = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36',
-    }
+    @headers     = {}
 
     raise Mastodon::HostValidationError, 'Instance does not support hidden service connections' if block_hidden_service?
 
