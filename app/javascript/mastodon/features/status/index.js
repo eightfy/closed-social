@@ -53,7 +53,7 @@ import { openModal } from '../../actions/modal';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { HotKeys } from 'react-hotkeys';
-import { boostModal, deleteModal } from '../../initial_state';
+import { boostModal, deleteModal, treeAcct } from '../../initial_state';
 import { attachFullscreenListener, detachFullscreenListener, isFullscreen } from '../ui/util/fullscreen';
 import { textForScreenReader, defaultMediaVisibility } from '../../components/status';
 import Icon from 'mastodon/components/icon';
@@ -160,9 +160,10 @@ const makeMapStateToProps = () => {
 
     if (status) {
       ancestorsIds = getAncestorsIds(state, { id: status.get('in_reply_to_id') });
-      const root_status = ancestorsIds.size? getStatus(state, {id: ancestorsIds.get(0)}) : status; //error is directly visit url of non-root detailedStatus, feature!
-      rootAcct = root_status? root_status.getIn(['account', 'acct']) : -1;
-      if(rootAcct == '0') {
+      const root_status = ancestorsIds.size? getStatus(state, {id: ancestorsIds.get(0)}) : status;
+      rootAcct = root_status? root_status.getIn(['account', 'id']) : null;
+      if(rootAcct == treeAcct) {
+		deep = ancestorsIds.size;
         descendantsIds = state.getIn(['contexts', 'replies', status.get('id')]);
         if(descendantsIds)
           descendantsIds = descendantsIds.reverse(); 
@@ -170,8 +171,7 @@ const makeMapStateToProps = () => {
       else {
         descendantsIds = getDescendantsIds(state, { id: status.get('id') });
       }
-      deep     = rootAcct == '0' ? ancestorsIds.size : null;
-      treeData = rootAcct == '0' ? getTreeData(state, {id: status.get('id')}) : null;
+      treeData = getTreeData(state, {id: status.get('id')})
     }
 
     return {
@@ -592,7 +592,7 @@ class Status extends ImmutablePureComponent {
           showBackButton
           multiColumn={multiColumn}
           extraButton={(
-            <button className='column-header__button' title={intl.formatMessage(status.get('hidden') ? messages.revealAll : messages.hideAll)} aria-label={intl.formatMessage(status.get('hidden') ? messages.revealAll : messages.hideAll)} onClick={deep ==null ? this.handleToggleAll : this.handleShowTree} aria-pressed={status.get('hidden') ? 'false' : 'true'}><Icon id={status.get('hidden') ? 'eye-slash' : 'eye'} /></button>
+            <button className='column-header__button' onClick={this.handleShowTree} aria-pressed={status.get('hidden') ? 'false' : 'true'}><Icon id={this.state.showTree ? 'eye-slash' : 'eye'} /></button>
           )}
         />
 

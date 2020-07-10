@@ -22,7 +22,8 @@ class InitialStateSerializer < ActiveModel::Serializer
       mascot: instance_presenter.mascot&.file&.url,
       profile_directory: Setting.profile_directory,
       trends: Setting.trends,
-      tree_root:  Rails.configuration.x.tree_address, 
+      tree_root: Rails.configuration.x.tree_address,
+      tree_acct: Rails.configuration.x.tree_acc
     }
 
     if object.current_account
