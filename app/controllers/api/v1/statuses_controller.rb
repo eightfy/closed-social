@@ -4,14 +4,23 @@ class AnonTag
   @@namelist = (f = Rails.configuration.x.anon_namelist) ? File.readlines(f).collect(&:strip) : ['Alice', 'Bob', 'Carol', 'Dave']
   @@used_name = []
   @@map = {}
+  @@last_use = Time.now
 
   def self.get_or_generate(pid)
+    if Time.now - @@last_use > 1.day
+      @@last_use = Time.now
+      @@map = {}
+      @@used_name = []
+    end
+
+    pre = @@map.empty? ? '*' : ''
+
     if !@@map[pid]
       @@map[pid] = (@@namelist - @@used_name).sample()
       @@used_name.append(@@map[pid])
     end
 
-    @@map[pid]
+    pre + @@map[pid]
   end
 
 end
