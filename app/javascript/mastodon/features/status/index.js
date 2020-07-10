@@ -163,7 +163,7 @@ const makeMapStateToProps = () => {
       const root_status = ancestorsIds.size? getStatus(state, {id: ancestorsIds.get(0)}) : status;
       rootAcct = root_status? root_status.getIn(['account', 'id']) : null;
       if(rootAcct == treeAcct) {
-		deep = ancestorsIds.size;
+        deep = ancestorsIds.size;
         descendantsIds = state.getIn(['contexts', 'replies', status.get('id')]);
         if(descendantsIds)
           descendantsIds = descendantsIds.reverse(); 
@@ -592,7 +592,7 @@ class Status extends ImmutablePureComponent {
           showBackButton
           multiColumn={multiColumn}
           extraButton={(
-            <button className='column-header__button' onClick={this.handleShowTree} aria-pressed={status.get('hidden') ? 'false' : 'true'}><Icon id={this.state.showTree ? 'eye-slash' : 'eye'} /></button>
+            <button className='column-header__button' onClick={this.handleShowTree}><Icon id={this.state.showTree ? 'eye-slash' : 'eye'} /></button>
           )}
         />
 
@@ -607,7 +607,7 @@ class Status extends ImmutablePureComponent {
                 <Tree
                   data={treeData}
                   height={800}
-	                width={svgWidth+80}
+                  width={svgWidth+80}
                   animated
                   keyProp = {"statusId"}
                   textProps={{
@@ -615,11 +615,11 @@ class Status extends ImmutablePureComponent {
                     y: -7
                   }}
                   gProps={{
-					          className: 'node',
-					          onClick: this.handleNodeClick
-				          }}
+                    className: 'node',
+                    onClick: this.handleNodeClick
+                  }}
                   svgProps={{
-			              className: 'tree-svg'
+                    className: 'tree-svg'
                   }}/>
                 :
                 <DetailedStatus
