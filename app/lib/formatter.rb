@@ -114,7 +114,7 @@ class Formatter
     aft_s = html[indices.last ..]
     bef_s = html[0 .. indices.first-1]
 
-    re = /(!?)\[(.*?)\]\($/
+    re = /(!?)\[([^\n\[\]]*?)\]\($/
     if aft_s and bef_s and aft_s.start_with?(')') and bef_s =~ re
         new_indices = [bef_s =~ re, indices.last+1]
         new_entity = {

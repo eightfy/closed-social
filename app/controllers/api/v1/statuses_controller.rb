@@ -6,12 +6,12 @@ class AnonTag
   @@map = {}
   @@last_use = Time.now
 
-  def self.get_or_generate(pid)
+  def self.get_or_generate(pid, note)
     if Time.now - @@last_use > 1.day
-      @@last_use = Time.now
       @@map = {}
       @@used_name = []
     end
+    @@last_use = Time.now
 
     pre = @@map.empty? ? '*' : ''
 
@@ -19,8 +19,7 @@ class AnonTag
       @@map[pid] = (@@namelist - @@used_name).sample()
       @@used_name.append(@@map[pid])
     end
-
-    pre + @@map[pid]
+    @@map[pid].in?(note) ? nil : pre + @@map[pid]
   end
 
 end
@@ -64,7 +63,7 @@ class Api::V1::StatusesController < Api::BaseController
   end
 
   def create
-    anon = Rails.configuration.x.anon_acc && status_params[:status].end_with?(Rails.configuration.x.anon_tag) && AnonTag.get_or_generate(current_user.account_id) 
+    anon = Rails.configuration.x.anon_acc && status_params[:status].end_with?(Rails.configuration.x.anon_tag) && AnonTag.get_or_generate(current_user.account_id, Account.find(Rails.configuration.x.anon_acc).note) 
     sender = anon ? Account.find(Rails.configuration.x.anon_acc) : current_user.account
     st_text = anon ? ("[#{anon}]:\n#{status_params[:status]}"[0..5000]) : status_params[:status]
 
