@@ -8,7 +8,7 @@ em.addEventListener("blur", function( event ) {
 	if(ap.style.display != 'none' && em.value) {
 		em.value+=ap.innerText;
 		ap.style.display = 'none';
-		alert('注意:清华邮箱收取外部邮件会有至多十分钟的延迟，完成注册后请稍后再查收邮件。请务必确保邮箱正确，闭社已经遇到了大量无效邮箱(例如漏掉了数字)')
+		//alert('注意:清华邮箱收取外部邮件会有至多十分钟的延迟，完成注册后请稍后再查收邮件。请务必确保邮箱正确，闭社已经遇到了大量无效邮箱(例如漏掉了数字)')
 	}
 });
 
