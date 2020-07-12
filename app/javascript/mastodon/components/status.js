@@ -122,7 +122,7 @@ class Status extends ImmutablePureComponent {
   _isMounted = false;
   componentDidMount () {
     this._isMounted = true;
-    setTimeout(this.loadContext, Math.ceil(Math.random() * 4000 + 1000));
+    setTimeout(this.loadContext, Math.ceil(Math.random() * 2000 + 500));
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -165,7 +165,7 @@ class Status extends ImmutablePureComponent {
     }
     const { status } = this.props;
     const r_status = status.get('reblog') || status;
-    if(this.props.showThread && this.state.noStartPD && (r_status.get('replies_count') || r_status.get('in_reply_to_id') || r_status.get('visibility') == 'private')) {
+    if(this.props.showThread && this.state.noStartPD) {
       this.setState({noStartPD: false});
       this.props.onPreview(r_status.get('id'));
     }
