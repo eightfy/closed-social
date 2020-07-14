@@ -502,7 +502,7 @@ class Status extends ImmutablePureComponent {
 
     if (rebloggedByText && status.get('in_reply_to_id')) {
       quote = ancestorsText ?
-            <div className='status__tree__quote__wrapper'>
+            <div className='status__tree__quote__wrapper' onClick={this.handleClick}>
               <Icon id="tree" />
               {ancestorsText}
             </div>

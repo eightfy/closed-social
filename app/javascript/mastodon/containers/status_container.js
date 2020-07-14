@@ -77,7 +77,7 @@ const makeMapStateToProps = () => {
   const getAncestorsText =  createSelector([
     (_, {ids}) => ids,
     state => state.get('statuses'),
-  ], (ids, statuses) => ids.map(i => {
+  ], (ids, statuses) => '>> '+ids.map(i => {
     let text = statuses.get(i) ? statuses.get(i).get('search_index') : i;
     if(text.length > 16)
       text = text.slice(0,13) + "...";
