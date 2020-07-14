@@ -4,7 +4,7 @@ import api, { getLinks } from 'mastodon/api';
 import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
 import compareId from 'mastodon/compare_id';
 import { usePendingItems as preferPendingItems } from 'mastodon/initial_state';
-
+import { fetchContext } from './statuses';
 export const TIMELINE_UPDATE  = 'TIMELINE_UPDATE';
 export const TIMELINE_DELETE  = 'TIMELINE_DELETE';
 export const TIMELINE_CLEAR   = 'TIMELINE_CLEAR';
@@ -103,6 +103,9 @@ export function expandTimeline(timelineId, path, params = {}, done = noOp) {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedStatuses(response.data));
       dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null, response.status === 206, isLoadingRecent, isLoadingMore, isLoadingRecent && preferPendingItems));
+      response.data.forEach(status => {
+        dispatch(fetchContext(status.id));
+      });
 
       if (timelineId === 'home') {
         dispatch(submitMarkers());

@@ -99,7 +99,6 @@ class Status extends ImmutablePureComponent {
     cachedMediaWidth: PropTypes.number,
   
     sonsIds: ImmutablePropTypes.list,
-    onPreview: PropTypes.func
   };
 
   // Avoid checking props that are functions (and whose equality will always
@@ -116,14 +115,7 @@ class Status extends ImmutablePureComponent {
   state = {
     showMedia: defaultMediaVisibility(this.props.status),
     statusId: undefined,
-    noStartPD: true
   };
-
-  _isMounted = false;
-  componentDidMount () {
-    this._isMounted = true;
-    setTimeout(this.loadContext, Math.ceil(Math.random() * 2000 + 500));
-  }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.status && nextProps.status.get('id') !== prevState.statusId) {
@@ -134,10 +126,6 @@ class Status extends ImmutablePureComponent {
     } else {
       return null;
     }
-  }
-
-  componentWillUnmount() {    
-    this._isMounted = false;
   }
 
   handleToggleMediaVisibility = () => {
@@ -156,19 +144,6 @@ class Status extends ImmutablePureComponent {
 
     const { status } = this.props;
     this.context.router.history.push(`/statuses/${status.getIn(['reblog', 'id'], status.get('id'))}`);
-  }
-
-  loadContext = () => {
-    if(!this._isMounted) {
-      //console.log('cancel');
-      return;
-    }
-    const { status } = this.props;
-    const r_status = status.get('reblog') || status;
-    if(this.props.showThread && this.state.noStartPD) {
-      this.setState({noStartPD: false});
-      this.props.onPreview(r_status.get('id'));
-    }
   }
 
   handleExpandClick = (e) => {

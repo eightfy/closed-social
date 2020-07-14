@@ -26,7 +26,6 @@ import {
   hideStatus,
   revealStatus,
   toggleStatusCollapse,
-  fetchContext,
 } from '../actions/statuses';
 import {
   unmuteAccount,
@@ -266,10 +265,6 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
 
   onUnblockDomain (domain) {
     dispatch(unblockDomain(domain));
-  },
-
-  onPreview (id) {
-    dispatch(fetchContext(id));
   },
 
 });
