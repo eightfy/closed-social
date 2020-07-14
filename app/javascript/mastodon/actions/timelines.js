@@ -104,7 +104,7 @@ export function expandTimeline(timelineId, path, params = {}, done = noOp) {
       dispatch(importFetchedStatuses(response.data));
       dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null, response.status === 206, isLoadingRecent, isLoadingMore, isLoadingRecent && preferPendingItems));
       response.data.forEach(status => {
-        dispatch(fetchContext(status.id));
+        dispatch(fetchContext(status.reblog ? status.reblog.id : status.id));
       });
 
       if (timelineId === 'home') {
