@@ -1,6 +1,3 @@
-- content_for :page_title do
-  = site_hostname
-
 - content_for :header_tags do
   %link{ rel: 'canonical', href: about_url }/
   = render partial: 'shared/og'
@@ -9,7 +6,7 @@
   .landing__brand
     = link_to root_url, class: 'brand' do
       = svg_logo_full
-      %span.brand__tagline=t 'about.tagline'
+      %span.brand__tagline=site_title
 
   .landing__grid
     .landing__grid__column.landing__grid__column-registration
