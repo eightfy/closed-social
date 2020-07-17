@@ -165,7 +165,7 @@ class ColumnsArea extends ImmutablePureComponent {
     return (
       <div className='columns-area columns-area--mobile' key={index}>
         {
-          link.props['data-preview-title-id'] == 'column.community' && 
+          ['column.community', 'column.public'].includes(link.props['data-preview-title-id']) &&
           <TrendsContainer />
         } 
         {view}
