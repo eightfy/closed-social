@@ -1,29 +1,5 @@
 # frozen_string_literal: true
 
-class AnonTag
-  @@namelist = (f = Rails.configuration.x.anon_namelist) ? File.readlines(f).collect(&:strip) : ['Alice', 'Bob', 'Carol', 'Dave']
-  @@used_name = []
-  @@map = {}
-  @@last_use = Time.now
-
-  def self.get_or_generate(pid, note)
-    if Time.now - @@last_use > 1.day
-      @@map = {}
-      @@used_name = []
-    end
-    @@last_use = Time.now
-
-    pre = @@map.empty? ? '*' : ''
-
-    if !@@map[pid]
-      @@map[pid] = (@@namelist - @@used_name).sample()
-      @@used_name.append(@@map[pid])
-    end
-    @@map[pid].in?(note) ? nil : pre + @@map[pid]
-  end
-
-end
-
 class Api::V1::StatusesController < Api::BaseController
   include Authorization
 
@@ -63,9 +39,10 @@ class Api::V1::StatusesController < Api::BaseController
   end
 
   def create
-    anon = Rails.configuration.x.anon_acc && status_params[:status].end_with?(Rails.configuration.x.anon_tag) && AnonTag.get_or_generate(current_user.account_id, Account.find(Rails.configuration.x.anon_acc).note) 
-    sender = anon ? Account.find(Rails.configuration.x.anon_acc) : current_user.account
-    st_text = anon ? ("[#{anon}]:\n#{status_params[:status]}"[0..5000]) : status_params[:status]
+    anon = Rails.configuration.x.anon
+    anon_name = anon.acc && status_params[:status].end_with?(anon.tag) && generate_anon_name(current_user.account.username + anon.salt, anon.namelist, Account.find(anon.acc).note)
+    sender = anon_name ? Account.find(anon.acc) : current_user.account
+    st_text = anon_name ? ("[#{anon_name}]:\n#{status_params[:status]}"[0..5000]) : status_params[:status]
 
     @status = PostStatusService.new.call(sender,
                                          text: st_text,
@@ -128,5 +105,10 @@ class Api::V1::StatusesController < Api::BaseController
 
   def pagination_params(core_params)
     params.slice(:limit).permit(:limit).merge(core_params)
+  end
+
+  def generate_anon_name(k, namelist, note)
+    name = namelist[Digest::SHA2.hexdigest(k).to_i(16) % namelist.size]
+    name.in?(note) ? nil : name
   end
 end
