@@ -58,6 +58,7 @@ class StatusesIndex < Chewy::Index
 
       field :text, type: 'text', value: ->(status) { [status.spoiler_text, Formatter.instance.plaintext(status)].concat(status.media_attachments.map(&:description)).concat(status.preloadable_poll ? status.preloadable_poll.options : []).join("\n\n") } do
         field :stemmed, type: 'text', analyzer: 'content'
+        field :chn    , type: 'text', analyzer: 'ik_max_word', search_analyzer: 'ik_smart'
       end
 
       field :searchable_by, type: 'long', value: ->(status, crutches) { status.searchable_by(crutches) }
