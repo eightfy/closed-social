@@ -1,19 +1,13 @@
 .public-account-header{:class => ("inactive" if account.moved?)}
   .public-account-header__image
-    - if user_signed_in?
-      = image_tag (current_account&.user&.setting_auto_play_gif ? account.header_original_url : account.header_static_url), class: 'parallax'
-    - else
-      = image_tag @instance_presenter.hero&.file&.url || @instance_presenter.thumbnail&.file&.url || asset_pack_path('media/images/preview.jpg'), alt: @instance_presenter.site_title
+    = image_tag (current_account&.user&.setting_auto_play_gif ? account.header_original_url : account.header_static_url), class: 'parallax'
   .public-account-header__bar
     = link_to short_account_url(account), class: 'avatar' do
-      - if user_signed_in?
-        = image_tag (current_account&.user&.setting_auto_play_gif ? account.avatar_original_url : account.avatar_static_url), id: 'profile_page_avatar', data: {original: full_asset_url(account.avatar_original_url), static: full_asset_url(account.avatar_static_url), autoplay: current_account&.user&.setting_auto_play_gif}
-      - else
-        = image_tag @instance_presenter.mascot&.file&.url || asset_pack_path('media/images/elephant_ui_plane.svg'), alt: ''
+      = image_tag (current_account&.user&.setting_auto_play_gif ? account.avatar_original_url : account.avatar_static_url), id: 'profile_page_avatar', data: {original: full_asset_url(account.avatar_original_url), static: full_asset_url(account.avatar_static_url), autoplay: current_account&.user&.setting_auto_play_gif}
     .public-account-header__tabs
       .public-account-header__tabs__name
         %h1
-          = user_signed_in? ? display_name(account, custom_emojify: true) : t('accounts.unsigned')
+          = display_name(account, custom_emojify: true)
           %small
             = acct(account)
             = fa_icon('lock') if account.locked?
@@ -37,14 +31,13 @@
         .public-account-header__tabs__tabs__buttons
           = account_action_button(account)
 
-    -if user_signed_in?
-      .public-account-header__extra
-        = render 'accounts/bio', account: account
+    .public-account-header__extra
+      = render 'accounts/bio', account: account
 
-        .public-account-header__extra__links
-          = link_to account_following_index_url(account) do
-            %strong= number_to_human account.following_count, strip_insignificant_zeros: true
-            = t('accounts.following', count: account.following_count)
-          = link_to account_followers_url(account) do
-            %strong= number_to_human account.followers_count, strip_insignificant_zeros: true
-            = t('accounts.followers', count: account.followers_count)
+      .public-account-header__extra__links
+        = link_to account_following_index_url(account) do
+          %strong= number_to_human account.following_count, strip_insignificant_zeros: true
+          = t('accounts.following', count: account.following_count)
+        = link_to account_followers_url(account) do
+          %strong= number_to_human account.followers_count, strip_insignificant_zeros: true
+          = t('accounts.followers', count: account.followers_count)
