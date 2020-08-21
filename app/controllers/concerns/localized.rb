@@ -8,10 +8,9 @@ module Localized
   end
 
   def set_locale
-    locale ='zh-CN'
-    #locale   = current_user.locale if respond_to?(:user_signed_in?) && user_signed_in?
-    #locale ||= session[:locale] ||= default_locale
-    #locale   = default_locale unless I18n.available_locales.include?(locale.to_sym)
+    locale   = current_user.locale if respond_to?(:user_signed_in?) && user_signed_in?
+    locale ||= session[:locale] ||= default_locale
+    locale   = default_locale unless I18n.available_locales.include?(locale.to_sym)
 
     I18n.with_locale(locale) do
       yield
