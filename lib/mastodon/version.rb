@@ -21,7 +21,7 @@ module Mastodon
     end
 
     def suffix
-      ''
+      '+闭社'
     end
 
     def to_a
@@ -33,7 +33,7 @@ module Mastodon
     end
 
     def repository
-      ENV.fetch('GITHUB_REPOSITORY') { 'tootsuite/mastodon' }
+      ENV.fetch('GITHUB_REPOSITORY') { 'closed-social/mastodon' }
     end
 
     def source_base_url
