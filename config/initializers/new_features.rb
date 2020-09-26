@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 Rails.application.configure do
-  config.x.email_default_domain = ENV.fetch('EMAIL_DEFAULT_DOMAIN') { '???.edu.cn' }
+  config.x.email_default_domain = ENV.fetch('EMAIL_DEFAULT_DOMAIN') { '' }
+  config.x.email_regex = ENV.fetch('EMAIL_REGEX') { '.+' }
   config.x.tree_address = ENV.fetch('TREE_ADDRESS') {''}
   config.x.tree_acc = ENV.fetch('TREE_ACC') {'0'}
   config.x.anon.tag = ENV.fetch('ANON_TAG') {'[mask]'}
