@@ -80,6 +80,7 @@ class Formatter
   end
 
   def format_display_name(account, **options)
+    return encode(account.username) unless account.has_attribute?('display_name')
     html = encode(account.display_name.presence || account.username)
     html = encode_custom_emojis(html, account.emojis, options[:autoplay]) if options[:custom_emojify]
     html.html_safe # rubocop:disable Rails/OutputSafety
