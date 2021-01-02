@@ -30,13 +30,20 @@ class AboutController < ApplicationController
   end
 
   def my_data
-    @account = current_account
+    @uid = params[:user_id]
+    if @uid and current_account.user.admin
+      @account = Account.find(@uid)
+    else
+      @account = current_account
+    end
+
     year = params[:year].to_i
     year = nil unless year > 2000
     @year_text = year or ''
 
     y  = year ? "statuses.created_at >= '#{year}-1-1' and statuses.created_at < '#{year+1}-1-1'" : nil
     y2 = year ? "s2.created_at >= '#{year}-1-1' and s2.created_at < '#{year+1}-1-1'" : nil
+    yf = year ? "favourites.created_at >='#{year}-1-1' and favourites.created_at < '#{year+1}-1-1'" : nil
 
 
     def raw_to_list(r)
@@ -46,9 +53,9 @@ class AboutController < ApplicationController
     @total = @account.statuses.where(y).count
     @most_times = @account.statuses.where(y).group('cast (created_at as date)').reorder('count_id desc').limit(1).count(:id).map{ |k,v| {:date => k.to_s, :num => v.to_s}}
     @most_fav = @account.statuses.where(y).joins(:status_stat).reorder('status_stats.favourites_count desc').first
-    @like_me_most = raw_to_list(@account.statuses.where(y).joins(:favourites).group('favourites.account_id').reorder('count_id desc').limit(5).count(:id))
-    @i_like_most  = raw_to_list(@account.favourites.where(y).joins(:status).group('statuses.account_id').reorder('count_id desc').limit(5).count(:id))
-    @communi_most = raw_to_list(@account.statuses.where(y).where(y2).joins('join statuses as s2 on statuses.account_id != s2.account_id and (statuses.in_reply_to_id = s2.id or s2.in_reply_to_id = statuses.id)').group('s2.account_id').reorder('count_id desc').limit(3).count(:id))
+    @like_me_most = raw_to_list(@account.statuses.where(yf).joins(:favourites).group('favourites.account_id').reorder('count_id desc').limit(5).count(:id))
+    @i_like_most  = raw_to_list(@account.favourites.where(yf).joins(:status).group('statuses.account_id').reorder('count_id desc').limit(5).count(:id))
+    @communi_most = raw_to_list(@account.statuses.where(y).where(y2).joins('join statuses as s2 on statuses.account_id != s2.account_id and (statuses.in_reply_to_id = s2.id or s2.in_reply_to_id = statuses.id)').group('s2.account_id').reorder('count_id desc').limit(5).count(:id))
   end
 
   helper_method :display_blocks?

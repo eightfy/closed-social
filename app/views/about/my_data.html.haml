@@ -5,6 +5,8 @@
   .column-0
     .box-widget
       .rich-formatting
+        - if @uid
+          = account_link_to(@account)
         %h2= "#{@year_text}在闭社:"
         %p
           我总共发布了
@@ -42,7 +44,7 @@
                 %li= account_link_to(a[:account], a[:num], full: a == @i_like_most.first)
         - if @communi_most.size > 0
           %p
-            和我互相交流最频繁的是:
+            和我相互交流最频繁的是:
             %ul
               - @communi_most.each do |a|
                 %li= account_link_to(a[:account], a[:num], full: a == @communi_most.first)
