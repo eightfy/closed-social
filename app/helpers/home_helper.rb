@@ -7,7 +7,7 @@ module HomeHelper
     }
   end
 
-  def account_link_to(account, button = '', path: nil)
+  def account_link_to(account, button = '', path: nil, full: true)
     content_tag(:div, class: 'account') do
       content_tag(:div, class: 'account__wrapper') do
         section = if account.nil?
@@ -20,7 +20,7 @@ module HomeHelper
                             content_tag(:span, t('about.contact_unavailable'), class: 'display-name__account')
                         end
                     end
-                  else
+                  elsif full
                     link_to(path || ActivityPub::TagManager.instance.url_for(account), class: 'account__display-name') do
                       content_tag(:div, class: 'account__avatar-wrapper') do
                         image_tag(full_asset_url(current_account&.user&.setting_auto_play_gif ? account.avatar_original_url : account.avatar_static_url), class: 'account__avatar')
@@ -31,6 +31,14 @@ module HomeHelper
                           end +
                             content_tag(:span, "@#{account.acct}", class: 'display-name__account')
                         end
+                    end
+                  else
+                    link_to(path || ActivityPub::TagManager.instance.url_for(account), class: 'account__display-name') do
+                      content_tag(:span, class: 'display-name') do
+                        content_tag(:bdi) do
+                          content_tag(:strong, display_name(account, custom_emojify: true), class: 'display-name__html emojify')
+                        end
+                      end
                     end
                   end
 

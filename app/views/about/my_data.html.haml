@@ -1,0 +1,53 @@
+- content_for :page_title do
+  = '我的'
+
+.grid
+  .column-0
+    .box-widget
+      .rich-formatting
+        %h2= "#{@year_text}在闭社:"
+        %p
+          我总共发布了
+          %strong
+            #{@total}
+          嘟文
+        - if @total > 0
+          %p
+            我发得最多的一天是
+            %strong
+              #{@most_times[0][:date]}
+            ，一下子发了
+            %strong
+              #{@most_times[0][:num]}
+            条
+        - if @most_fav&.favourites_count or 0 > 0 
+          %p
+            其中最高赞是“
+            =link_to @most_fav.text[0..8]+'...', @most_fav.uri
+            ”，收获了
+            %strong
+              #{@most_fav.favourites_count}
+            赞
+        - if @like_me_most.size > 0
+          %p
+            给我点赞最多的是他们:
+            %ul
+              - @like_me_most.each do |a|
+                %li= account_link_to(a[:account], a[:num], full: a == @like_me_most.first)
+        - if @i_like_most.size > 0
+          %p
+            收到我的赞最多的是他们:
+            %ul 
+              - @i_like_most.each do |a|
+                %li= account_link_to(a[:account], a[:num], full: a == @i_like_most.first)
+        - if @communi_most.size > 0
+          %p
+            和我互相交流最频繁的是:
+            %ul
+              - @communi_most.each do |a|
+                %li= account_link_to(a[:account], a[:num], full: a == @communi_most.first)
+        %br
+        %br
+        %p= '感谢陪伴，新的一年，祝平安喜乐'
+  .column-1
+    = render 'application/sidebar'
