@@ -92,19 +92,19 @@ class Status < ApplicationRecord
   scope :without_reblogs, -> { joins('INNER JOIN statuses ori ON (statuses.reblog_of_id is NULL AND ori.id = statuses.id) OR ori.id = statuses.reblog_of_id')
                                 .where('ori.account_id = statuses.account_id') }
   scope :with_public_visibility, -> { where(visibility: :public) }
-  scope :tagged_with, ->(tag) { joins(:statuses_tags).where(statuses_tags: { tag_id: tag }) }
+  scope :tagged_with, ->(tag_ids) { joins(:statuses_tags).where(statuses_tags: { tag_id: tag_ids }) }
   scope :in_chosen_languages, ->(account) { where(language: nil).or where(language: account.chosen_languages) }
   scope :excluding_silenced_accounts, -> { left_outer_joins(:account).where(accounts: { silenced_at: nil }) }
   scope :including_silenced_accounts, -> { left_outer_joins(:account).where.not(accounts: { silenced_at: nil }) }
   scope :not_excluded_by_account, ->(account) { where.not(account_id: account.excluded_from_timeline_account_ids) }
   scope :not_domain_blocked_by_account, ->(account) { account.excluded_from_timeline_domains.blank? ? left_outer_joins(:account) : left_outer_joins(:account).where('accounts.domain IS NULL OR accounts.domain NOT IN (?)', account.excluded_from_timeline_domains) }
-  scope :tagged_with_all, ->(tags) {
-    Array(tags).map(&:id).map(&:to_i).reduce(self) do |result, id|
+  scope :tagged_with_all, ->(tag_ids) {
+    Array(tag_ids).reduce(self) do |result, id|
       result.joins("INNER JOIN statuses_tags t#{id} ON t#{id}.status_id = statuses.id AND t#{id}.tag_id = #{id}")
     end
   }
-  scope :tagged_with_none, ->(tags) {
-    Array(tags).map(&:id).map(&:to_i).reduce(self) do |result, id|
+  scope :tagged_with_none, ->(tag_ids) {
+    Array(tag_ids).reduce(self) do |result, id|
       result.joins("LEFT OUTER JOIN statuses_tags t#{id} ON t#{id}.status_id = statuses.id AND t#{id}.tag_id = #{id}")
             .where("t#{id}.tag_id IS NULL")
     end
@@ -231,14 +231,6 @@ class Status < ApplicationRecord
     @emojis = CustomEmoji.from_text(fields.join(' '), account.domain)
   end
 
-  def mark_for_mass_destruction!
-    @marked_for_mass_destruction = true
-  end
-
-  def marked_for_mass_destruction?
-    @marked_for_mass_destruction
-  end
-
   def replies_count
     status_stat&.replies_count || 0
   end
@@ -312,7 +304,7 @@ class Status < ApplicationRecord
 
       return if account_ids.empty?
 
-      accounts = Account.where(id: account_ids).includes(:account_stat).each_with_object({}) { |a, h| h[a.id] = a }
+      accounts = Account.where(id: account_ids).includes(:account_stat).index_by(&:id)
 
       cached_items.each do |item|
         item.account = accounts[item.account_id]
@@ -345,7 +337,7 @@ class Status < ApplicationRecord
     def from_text(text)
       return [] if text.blank?
 
-      text.scan(FetchLinkCardService::URL_PATTERN).map(&:first).uniq.map do |url|
+      text.scan(FetchLinkCardService::URL_PATTERN).map(&:first).uniq.filter_map do |url|
         status = begin
           if TagManager.instance.local_url?(url)
             ActivityPub::TagManager.instance.uri_to_resource(url, Status)
@@ -354,7 +346,7 @@ class Status < ApplicationRecord
           end
         end
         status&.distributable? ? status : nil
-      end.compact
+      end
     end
   end
 
@@ -433,7 +425,7 @@ class Status < ApplicationRecord
   end
 
   def decrement_counter_caches
-    return if direct_visibility? || marked_for_mass_destruction?
+    return if direct_visibility?
 
     account&.decrement_count!(:statuses_count)
     reblog&.decrement_count!(:reblogs_count) if reblog?
@@ -443,7 +435,7 @@ class Status < ApplicationRecord
   def unlink_from_conversations
     return unless direct_visibility?
 
-    mentioned_accounts = mentions.includes(:account).map(&:account)
+    mentioned_accounts = (association(:mentions).loaded? ? mentions : mentions.includes(:account)).map(&:account)
     inbox_owners       = mentioned_accounts.select(&:local?) + (account.local? ? [account] : [])
 
     inbox_owners.each do |inbox_owner|
