@@ -40,7 +40,7 @@ class Api::V1::StatusesController < Api::BaseController
 
   def create
     anon = Rails.configuration.x.anon
-    anon_name = anon.acc && status_params[:status].end_with?(anon.tag) && generate_anon_name(current_user.account.username + anon.salt + (Time.now - 5.hours).strftime("%D"), anon.namelist, Account.find(anon.acc).note)
+    anon_name = anon.acc && status_params[:status].strip.end_with?(anon.tag) && generate_anon_name(current_user.account.username + anon.salt + (Time.now - 5.hours).strftime("%D"), anon.namelist, Account.find(anon.acc).note)
     sender = anon_name ? Account.find(anon.acc) : current_user.account
     st_text = anon_name ? ("[#{anon_name}]:\n#{status_params[:status]}"[0..5000]) : status_params[:status]
 
