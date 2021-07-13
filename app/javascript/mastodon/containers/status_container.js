@@ -109,7 +109,7 @@ const makeMapStateToProps = () => {
       sonsIds = getSonsIds(state, { id : status.getIn(['reblog', 'id'], props.id)});
       if(status.get('reblog')) {
         ancestorsIds = getAncestorsIds(state, { id: status.getIn(['reblog', 'in_reply_to_id']) });
-        if(ancestorsIds && ancestorsIds.first() == treeRoot.split('/').pop()) {
+        if(ancestorsIds && treeRoot && ancestorsIds.first() == treeRoot.split('/').pop()) {
           ancestorsText = getAncestorsText(state, { ids: ancestorsIds.shift() });
         }
       }

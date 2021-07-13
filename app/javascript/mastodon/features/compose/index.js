@@ -113,7 +113,7 @@ class Compose extends React.PureComponent {
           {!columns.some(column => column.get('id') === 'HOME') && (
             <Link to='/timelines/home' className='drawer__tab' title={intl.formatMessage(messages.home_timeline)} aria-label={intl.formatMessage(messages.home_timeline)}><Icon id='home' fixedWidth /></Link>
           )}
-          {!columns.some(column => column.get('id') === 'TREE') && (
+          {!columns.some(column => column.get('id') === 'TREE') && treeRoot && (
             <Link to={treeRoot} className='drawer__tab' title={intl.formatMessage(messages.tree)} aria-label={intl.formatMessage(messages.tree)}><Icon id='tree' fixedWidth /></Link>
           )}
           {!columns.some(column => column.get('id') === 'NOTIFICATIONS') && (
