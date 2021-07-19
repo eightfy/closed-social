@@ -21,7 +21,7 @@ module Mastodon
     end
 
     def suffix
-      '+闭社'
+      '+cs'
     end
 
     def to_a
