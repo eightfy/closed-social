@@ -58,8 +58,9 @@ class Account < ApplicationRecord
     hub_url
   )
 
-  USERNAME_RE = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
-  MENTION_RE  = /(?<=^|[^\/[:word:]])@((#{USERNAME_RE})(?:@[[:word:]\.\-]+[a-z0-9]+)?)/i
+  USERNAME_RE   = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
+  MENTION_RE    = /(?<=^|[^\/[:word:]])@((#{USERNAME_RE})(?:@[[:word:]\.\-]+[[:word:]]+)?)/i
+  URL_PREFIX_RE = /\Ahttp(s?):\/\/[^\/]+/
 
   include AccountAssociations
   include AccountAvatar
@@ -295,7 +296,11 @@ class Account < ApplicationRecord
   end
 
   def fields
-    (self[:fields] || []).map { |f| Field.new(self, f) }
+    (self[:fields] || []).map do |f|
+      Field.new(self, f)
+    rescue
+      nil
+    end.compact
   end
 
   def fields_attributes=(attributes)
@@ -375,7 +380,7 @@ class Account < ApplicationRecord
   def synchronization_uri_prefix
     return 'local' if local?
 
-    @synchronization_uri_prefix ||= uri[/http(s?):\/\/[^\/]+\//]
+    @synchronization_uri_prefix ||= "#{uri[URL_PREFIX_RE]}/"
   end
 
   class Field < ActiveModelSerializers::Model
@@ -570,7 +575,11 @@ class Account < ApplicationRecord
   def create_canonical_email_block!
     return unless local? && user_email.present?
 
-    CanonicalEmailBlock.create(reference_account: self, email: user_email)
+    begin
+      CanonicalEmailBlock.create(reference_account: self, email: user_email)
+    rescue ActiveRecord::RecordNotUnique
+      # A canonical e-mail block may already exist for the same e-mail
+    end
   end
 
   def destroy_canonical_email_block!

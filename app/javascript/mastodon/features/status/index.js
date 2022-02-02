@@ -46,7 +46,7 @@ import { initBlockModal } from '../../actions/blocks';
 import { initBoostModal } from '../../actions/boosts';
 import { initReport } from '../../actions/reports';
 import { makeGetStatus, makeGetPictureInPicture } from '../../selectors';
-import { ScrollContainer } from 'react-router-scroll-4';
+import ScrollContainer from 'mastodon/containers/scroll_container';
 import ColumnBackButton from '../../components/column_back_button';
 import ColumnHeader from '../../components/column_header';
 import StatusContainer from '../../containers/status_container';
@@ -84,7 +84,7 @@ const makeMapStateToProps = () => {
     ancestorsIds = ancestorsIds.withMutations(mutable => {
       let id = statusId;
 
-      while (id) {
+      while (id && !mutable.includes(id)) {
         mutable.unshift(id);
         id = inReplyTos.get(id);
       }
@@ -102,7 +102,7 @@ const makeMapStateToProps = () => {
     const ids = [statusId];
 
     while (ids.length > 0) {
-      let id        = ids.shift();
+      let id        = ids.pop();
       const replies = contextReplies.get(id);
 
       if (statusId !== id) {
@@ -111,7 +111,7 @@ const makeMapStateToProps = () => {
 
       if (replies) {
         replies.reverse().forEach(reply => {
-          ids.unshift(reply);
+          if (!ids.includes(reply) && !descendantsIds.includes(reply) && statusId !== reply) ids.push(reply);
         });
       }
     }
@@ -559,7 +559,7 @@ class Status extends ImmutablePureComponent {
 
   render () {
     let ancestors, descendants;
-    const { shouldUpdateScroll, status, deep, ancestorsIds, descendantsIds, treeData, intl, domain, multiColumn, pictureInPicture } = this.props;
+    const { status, deep, ancestorsIds, descendantsIds, treeData, intl, domain, multiColumn, pictureInPicture } = this.props;
     const { fullscreen, showTree, svgWidth, activeNode } = this.state;
 
     if (status === null) {
@@ -602,7 +602,7 @@ class Status extends ImmutablePureComponent {
           )}
         />
 
-        <ScrollContainer scrollKey='thread' shouldUpdateScroll={shouldUpdateScroll}>
+        <ScrollContainer scrollKey='thread'>
           <div className={classNames('scrollable', { fullscreen }, {'tree':deep!=null})} ref={this.setRef}>
             {ancestors}
 
