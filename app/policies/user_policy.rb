@@ -6,6 +6,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def change_email?
+    return false
     staff? && !record.staff?
   end
 

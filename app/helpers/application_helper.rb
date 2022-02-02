@@ -88,6 +88,11 @@ module ApplicationHelper
     policy(record).public_send("#{action}?")
   end
 
+  def masked_email(email)
+    email_username = email.split('@').first
+    "#{email_username[0]}***#{email_username[-1]}@#{email.split('@').last}"
+  end
+
   def fa_icon(icon, attributes = {})
     class_names = attributes[:class]&.split(' ') || []
     class_names << 'fa'
